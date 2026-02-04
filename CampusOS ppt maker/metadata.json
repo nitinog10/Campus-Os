@@ -1,0 +1,8 @@
+{
+  "name": "SlideCraft AI",
+  "description": "An intelligent presentation assistant that generates beautiful multi-slide presentations with custom themes and AI-generated imagery.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

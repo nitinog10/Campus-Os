@@ -1,7 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { ParsedIntent, Pipeline, GeneratedAsset, PipelineStep } from '@/types/campusos';
+import type { HistoryEntry } from '@/types/history';
 import { toast } from 'sonner';
+
+const STORAGE_KEY_HISTORY = 'campusos_creation_history';
 
 interface UseCreationEngineReturn {
   userInput: string;
@@ -14,6 +17,12 @@ interface UseCreationEngineReturn {
   error: string | null;
   startCreation: () => Promise<void>;
   reset: () => void;
+  // History
+  history: HistoryEntry[];
+  activeEntryId: string | null;
+  loadFromHistory: (entry: HistoryEntry) => void;
+  deleteFromHistory: (id: string) => void;
+  clearHistory: () => void;
 }
 
 export function useCreationEngine(): UseCreationEngineReturn {
@@ -24,6 +33,87 @@ export function useCreationEngine(): UseCreationEngineReturn {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // History state
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [activeEntryId, setActiveEntryId] = useState<string | null>(null);
+
+  // Load history on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem(STORAGE_KEY_HISTORY);
+    if (savedHistory) {
+      try {
+        setHistory(JSON.parse(savedHistory));
+      } catch (e) {
+        console.error('Error loading history:', e);
+      }
+    }
+  }, []);
+
+  // Save history whenever it changes
+  useEffect(() => {
+    if (history.length > 0) {
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+    }
+  }, [history]);
+
+  const saveToHistory = useCallback((
+    input: string,
+    parsedIntent: ParsedIntent,
+    generatedPipeline: Pipeline | null,
+    generatedAssets: GeneratedAsset[]
+  ) => {
+    const entry: HistoryEntry = {
+      id: Date.now().toString(),
+      userInput: input,
+      intent: parsedIntent,
+      pipeline: generatedPipeline,
+      assets: generatedAssets,
+      createdAt: new Date().toISOString(),
+      title: parsedIntent.title || input.slice(0, 50),
+    };
+    
+    setHistory(prev => [entry, ...prev]);
+    setActiveEntryId(entry.id);
+  }, []);
+
+  const loadFromHistory = useCallback((entry: HistoryEntry) => {
+    setUserInput(entry.userInput);
+    setIntent(entry.intent);
+    setPipeline(entry.pipeline);
+    setAssets(entry.assets);
+    setActiveEntryId(entry.id);
+    setError(null);
+    setIsProcessing(false);
+    setCurrentStep(null);
+  }, []);
+
+  const deleteFromHistory = useCallback((id: string) => {
+    setHistory(prev => {
+      const newHistory = prev.filter(entry => entry.id !== id);
+      if (newHistory.length === 0) {
+        localStorage.removeItem(STORAGE_KEY_HISTORY);
+      } else {
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(newHistory));
+      }
+      return newHistory;
+    });
+    
+    if (activeEntryId === id) {
+      setActiveEntryId(null);
+      // Also reset the current view
+      setUserInput('');
+      setIntent(null);
+      setPipeline(null);
+      setAssets([]);
+    }
+  }, [activeEntryId]);
+
+  const clearHistory = useCallback(() => {
+    setHistory([]);
+    localStorage.removeItem(STORAGE_KEY_HISTORY);
+    setActiveEntryId(null);
+  }, []);
 
   const reset = useCallback(() => {
     setUserInput('');
@@ -33,6 +123,7 @@ export function useCreationEngine(): UseCreationEngineReturn {
     setIsProcessing(false);
     setCurrentStep(null);
     setError(null);
+    setActiveEntryId(null);
   }, []);
 
   const startCreation = useCallback(async () => {
@@ -142,6 +233,9 @@ export function useCreationEngine(): UseCreationEngineReturn {
       setCurrentStep(null);
       toast.success('Creation complete!');
 
+      // Save to history
+      saveToHistory(userInput, parsedIntent, generatedPipeline, generatedAssets);
+
     } catch (err) {
       console.error('Creation engine error:', err);
       const message = err instanceof Error ? err.message : 'An error occurred';
@@ -150,7 +244,7 @@ export function useCreationEngine(): UseCreationEngineReturn {
     } finally {
       setIsProcessing(false);
     }
-  }, [userInput]);
+  }, [userInput, saveToHistory]);
 
   return {
     userInput,
@@ -162,6 +256,12 @@ export function useCreationEngine(): UseCreationEngineReturn {
     currentStep,
     error,
     startCreation,
-    reset
+    reset,
+    // History
+    history,
+    activeEntryId,
+    loadFromHistory,
+    deleteFromHistory,
+    clearHistory
   };
 }
