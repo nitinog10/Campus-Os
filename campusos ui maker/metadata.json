@@ -1,0 +1,5 @@
+{
+  "name": "SparkUI - AI Web Generator",
+  "description": "A Vercel-inspired AI-powered frontend generation tool that transforms prompts into functional React & Tailwind components.",
+  "requestFramePermissions": []
+}

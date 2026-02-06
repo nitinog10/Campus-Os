@@ -1,5 +1,5 @@
 {
-  "name": "slidecraft-ai",
+  "name": "sparkui---ai-web-generator",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,11 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/genai": "^1.40.0",
     "react-dom": "^19.2.4",
-    "@google/genai": "^1.39.0",
-    "react": "^19.2.4",
-    "jspdf": "^2.5.1",
-    "html2canvas": "^1.4.1"
+    "react": "^19.2.4"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

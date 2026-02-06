@@ -7,7 +7,7 @@ import { PipelineView } from '@/components/PipelineView';
 import { CreationCanvas } from '@/components/CreationCanvas';
 import HistorySidebar from '@/components/HistorySidebar';
 import { useNavigate } from 'react-router-dom';
-import { Clock, Sparkles, Layout, Presentation, Megaphone, ArrowUpRight } from 'lucide-react';
+import { Clock, Sparkles, Layout, Presentation, Megaphone, ArrowUpRight, Palette } from 'lucide-react';
 import { ShaderGradientCanvas, ShaderGradient } from '@shadergradient/react';
 
 const Index = () => {
@@ -157,7 +157,7 @@ const Index = () => {
               <h3 className="text-center text-sm font-medium text-white/50 uppercase tracking-wider mb-6">
                 Popular Templates
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
                 <FeatureCard
                   icon={<Megaphone className="w-5 h-5" />}
                   title="Event Promotion"
@@ -176,6 +176,14 @@ const Index = () => {
                   description="Slide decks and visual content for assignments"
                   color="violet"
                   onClick={() => navigate('/presentation')}
+                  isClickable={true}
+                />
+                <FeatureCard
+                  icon={<Palette className="w-5 h-5" />}
+                  title="UI Maker"
+                  description="Design custom UI components and interfaces"
+                  color="blue"
+                  onClick={() => window.open('http://localhost:3000', '_blank')}
                   isClickable={true}
                 />
               </div>
