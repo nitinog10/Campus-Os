@@ -22,6 +22,7 @@ export interface TitleSlide {
     type: "title";
     title: string;
     subtitle: string;
+    image?: string;
 }
 
 export interface ContentSlide {
@@ -29,6 +30,20 @@ export interface ContentSlide {
     title: string;
     bullets: string[];
     note?: string;
+    image?: string;
+}
+
+export interface ImageFocusSlide {
+    type: "image-focus";
+    title: string;
+    caption: string;
+    image: string;
+}
+
+export interface StatsSlide {
+    type: "stats";
+    title: string;
+    stats: { value: string; label: string }[];
 }
 
 export interface TwoColumnSlide {
@@ -43,12 +58,14 @@ export interface ClosingSlide {
     title: string;
     subtitle: string;
     note?: string;
+    image?: string;
 }
 
-export type Slide = TitleSlide | ContentSlide | TwoColumnSlide | ClosingSlide;
+export type Slide = TitleSlide | ContentSlide | ImageFocusSlide | StatsSlide | TwoColumnSlide | ClosingSlide;
 
 export interface PresentationData {
     title: string;
+    theme?: { primary: string; secondary: string; accent: string };
     slides: Slide[];
 }
 
