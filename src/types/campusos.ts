@@ -1,6 +1,7 @@
 // ─── CampusOS Core Types ────────────────────────────────
 
 export type IntentType = "event_promotion" | "website" | "presentation";
+export type AssetType = "poster" | "landing" | "presentation";
 export type Tone = "formal" | "casual" | "energetic" | "professional" | "creative";
 export type StepType = "text" | "design" | "code";
 export type StepStatus = "pending" | "running" | "done" | "error";
@@ -14,6 +15,81 @@ export interface ParsedIntent {
     elements: string[];
     rawPrompt: string;
 }
+
+// ─── Presentation Slides ────────────────────────────────
+
+export interface TitleSlide {
+    type: "title";
+    title: string;
+    subtitle: string;
+}
+
+export interface ContentSlide {
+    type: "content";
+    title: string;
+    bullets: string[];
+    note?: string;
+}
+
+export interface TwoColumnSlide {
+    type: "two-column";
+    title: string;
+    left: { heading: string; items: string[] };
+    right: { heading: string; items: string[] };
+}
+
+export interface ClosingSlide {
+    type: "closing";
+    title: string;
+    subtitle: string;
+    note?: string;
+}
+
+export type Slide = TitleSlide | ContentSlide | TwoColumnSlide | ClosingSlide;
+
+export interface PresentationData {
+    title: string;
+    slides: Slide[];
+}
+
+// ─── Generated Asset (new unified format) ───────────────
+
+export interface GeneratedAssetV2 {
+    id: string;
+    type: AssetType;
+    title: string;
+    content: string | PresentationData; // HTML string for poster/landing, JSON for presentation
+    contentType: "html" | "json";
+    intent: ParsedIntent;
+    viewUrl: string;
+    createdAt: string;
+}
+
+// ─── Asset Registry ─────────────────────────────────────
+
+export interface AssetRegistryEntry {
+    id: string;
+    type: AssetType;
+    title: string;
+    prompt: string;
+    viewUrl: string;
+    createdAt: string;
+    intent: ParsedIntent;
+}
+
+// ─── Creation Session (updated) ─────────────────────────
+
+export interface CreationSession {
+    id: string;
+    prompt: string;
+    assetType: AssetType | "auto";
+    asset: GeneratedAssetV2 | null;
+    status: "idle" | "generating" | "done" | "error";
+    error: string | null;
+    createdAt: string;
+}
+
+// ─── Legacy types (kept for backwards compat) ───────────
 
 export interface PipelineStep {
     id: string;
@@ -38,17 +114,6 @@ export interface GeneratedAsset {
     content: string;
     contentType: "text" | "html" | "markdown" | "json";
     explanation: string;
-}
-
-export interface CreationSession {
-    id: string;
-    prompt: string;
-    intent: ParsedIntent | null;
-    pipeline: Pipeline | null;
-    assets: GeneratedAsset[];
-    status: "idle" | "interpreting" | "planning" | "generating" | "done" | "error";
-    error: string | null;
-    createdAt: string;
 }
 
 export interface HistoryEntry {

@@ -1,12 +1,21 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, ExternalLink, Sparkles, Loader2, Image, Globe, Presentation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IntentInput } from "@/components/IntentInput";
-import { CreationCanvas } from "@/components/CreationCanvas";
 import { useCreationEngine } from "@/hooks/useCreationEngine";
+import type { AssetType } from "@/types/campusos";
+
+const assetTypes: { value: AssetType | "auto"; label: string; icon: React.ReactNode; description: string }[] = [
+    { value: "auto", label: "Auto-Detect", icon: <Sparkles className="w-5 h-5" />, description: "AI decides the best format" },
+    { value: "poster", label: "Poster", icon: <Image className="w-5 h-5" />, description: "Event posters & flyers" },
+    { value: "landing", label: "Landing Page", icon: <Globe className="w-5 h-5" />, description: "Full website pages" },
+    { value: "presentation", label: "Presentation", icon: <Presentation className="w-5 h-5" />, description: "Slide decks" },
+];
 
 export default function Create() {
     const { session, runCreation, reset } = useCreationEngine();
+    const [selectedType, setSelectedType] = useState<AssetType | "auto">("auto");
     const isActive = session.status !== "idle";
 
     return (
@@ -24,8 +33,10 @@ export default function Create() {
                     className="text-center mb-10"
                 >
                     <h1 className="text-3xl md:text-4xl font-bold mb-3">
-                        {isActive ? (
-                            <span className="gradient-text">Creating…</span>
+                        {session.status === "generating" ? (
+                            <span className="gradient-text">Creating your {selectedType === "auto" ? "asset" : selectedType}…</span>
+                        ) : session.status === "done" ? (
+                            <span className="gradient-text">Created!</span>
                         ) : (
                             <>
                                 What do you want to{" "}
@@ -35,38 +46,125 @@ export default function Create() {
                     </h1>
                     {!isActive && (
                         <p className="text-muted-foreground max-w-lg mx-auto">
-                            Describe your idea and let AI build it for you
+                            Describe your idea and choose a format — AI builds the rest
                         </p>
                     )}
-                    {session.status === "done" && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-4"
-                        >
-                            <Button
-                                variant="outline"
-                                onClick={reset}
-                                className="gap-2"
-                            >
-                                <RotateCcw className="w-4 h-4" />
-                                Create Something New
-                            </Button>
-                        </motion.div>
-                    )}
                 </motion.div>
+
+                {/* Asset Type Selector */}
+                {!isActive && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="flex flex-wrap justify-center gap-3 mb-8"
+                    >
+                        {assetTypes.map((type) => (
+                            <button
+                                key={type.value}
+                                onClick={() => setSelectedType(type.value)}
+                                className={`relative flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-200 cursor-pointer group ${selectedType === type.value
+                                        ? "glass-strong border border-primary/30 text-primary glow-purple"
+                                        : "glass border border-transparent text-muted-foreground hover:text-foreground hover:border-border/50"
+                                    }`}
+                            >
+                                {type.icon}
+                                <div className="text-left">
+                                    <p className="text-sm font-medium">{type.label}</p>
+                                    <p className="text-[11px] text-muted-foreground">{type.description}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </motion.div>
+                )}
 
                 {/* Input */}
                 {!isActive && (
                     <IntentInput
-                        onSubmit={runCreation}
-                        isLoading={session.status === "interpreting"}
+                        onSubmit={(prompt) => runCreation(prompt, selectedType)}
+                        isLoading={false}
                     />
                 )}
 
-                {/* Canvas */}
-                {isActive && (
-                    <CreationCanvas session={session} />
+                {/* Generating State */}
+                {session.status === "generating" && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col items-center gap-6 py-20"
+                    >
+                        <div className="relative">
+                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
+                                <Loader2 className="w-10 h-10 text-primary animate-spin" />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-xl animate-pulse-glow" />
+                        </div>
+                        <div className="text-center">
+                            <p className="text-lg font-medium">AI is building your {selectedType === "auto" ? "asset" : selectedType}</p>
+                            <p className="text-sm text-muted-foreground mt-2 max-w-md">
+                                Interpreting your request, planning the layout, and generating production-ready content. This takes 15-30 seconds.
+                            </p>
+                        </div>
+                        <div className="flex gap-1">
+                            {[0, 1, 2, 3, 4].map((i) => (
+                                <div
+                                    key={i}
+                                    className="w-2 h-2 rounded-full bg-primary/40 animate-pulse"
+                                    style={{ animationDelay: `${i * 200}ms` }}
+                                />
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Done State */}
+                {session.status === "done" && session.asset && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex flex-col items-center gap-6 py-16"
+                    >
+                        <div className="w-20 h-20 rounded-2xl bg-green-500/10 flex items-center justify-center">
+                            <Sparkles className="w-10 h-10 text-green-400" />
+                        </div>
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold mb-2">{session.asset.title}</h2>
+                            <p className="text-muted-foreground">
+                                Your {session.asset.type} has been generated and opened in a new tab
+                            </p>
+                        </div>
+                        <div className="flex gap-3">
+                            <Button
+                                variant="glow"
+                                onClick={() => window.open(session.asset!.viewUrl, "_blank")}
+                                className="gap-2"
+                            >
+                                <ExternalLink className="w-4 h-4" />
+                                Open Viewer
+                            </Button>
+                            <Button variant="outline" onClick={reset} className="gap-2">
+                                <RotateCcw className="w-4 h-4" />
+                                Create Another
+                            </Button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Error State */}
+                {session.status === "error" && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex flex-col items-center gap-4 py-16"
+                    >
+                        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400 max-w-md text-center">
+                            {session.error}
+                        </div>
+                        <Button variant="outline" onClick={reset} className="gap-2">
+                            <RotateCcw className="w-4 h-4" />
+                            Try Again
+                        </Button>
+                    </motion.div>
                 )}
             </div>
         </div>

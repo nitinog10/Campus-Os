@@ -1,4 +1,4 @@
-import type { ParsedIntent, Pipeline, GeneratedAsset } from "@/types/campusos";
+import type { GeneratedAssetV2, AssetType } from "@/types/campusos";
 
 const API_BASE = "/api";
 
@@ -17,17 +17,11 @@ async function post<T>(endpoint: string, body: unknown): Promise<T> {
     return res.json();
 }
 
-export async function interpretIntent(prompt: string): Promise<ParsedIntent> {
-    return post<ParsedIntent>("/interpret-intent", { prompt });
-}
+// ─── New consolidated endpoint ──────────────────────────
 
-export async function generatePipeline(intent: ParsedIntent): Promise<Pipeline> {
-    return post<Pipeline>("/generate-pipeline", { intent });
-}
-
-export async function generateAsset(
-    step: { id: string; label: string; description: string; stepType: string },
-    intent: ParsedIntent
-): Promise<GeneratedAsset> {
-    return post<GeneratedAsset>("/generate-asset", { step, intent });
+export async function generate(
+    prompt: string,
+    assetType: AssetType | "auto" = "auto"
+): Promise<GeneratedAssetV2> {
+    return post<GeneratedAssetV2>("/generate", { prompt, assetType });
 }
