@@ -1,62 +1,61 @@
-// CAMPUSOS Type Definitions
+// ─── CampusOS Core Types ────────────────────────────────
 
-export type IntentType = 'event_promotion' | 'website' | 'presentation';
+export type IntentType = "event_promotion" | "website" | "presentation";
+export type Tone = "formal" | "casual" | "energetic" | "professional" | "creative";
+export type StepType = "text" | "design" | "code";
+export type StepStatus = "pending" | "running" | "done" | "error";
 
 export interface ParsedIntent {
-  type: IntentType;
-  title: string;
-  description: string;
-  audience: string;
-  tone: 'formal' | 'casual' | 'energetic' | 'professional';
-  elements: string[];
-  context: Record<string, string>;
+    type: IntentType;
+    title: string;
+    description: string;
+    audience: string;
+    tone: Tone;
+    elements: string[];
+    rawPrompt: string;
 }
 
 export interface PipelineStep {
-  id: string;
-  name: string;
-  description: string;
-  type: 'text' | 'design' | 'code';
-  status: 'pending' | 'processing' | 'complete' | 'error';
-  dependencies: string[];
-  output?: GeneratedAsset;
-  explanation?: string;
+    id: string;
+    label: string;
+    description: string;
+    stepType: StepType;
+    status: StepStatus;
+    dependencies: string[];
+    order: number;
 }
 
 export interface Pipeline {
-  id: string;
-  intent: ParsedIntent;
-  steps: PipelineStep[];
-  status: 'initializing' | 'running' | 'complete' | 'error';
-  createdAt: Date;
+    id: string;
+    intentId: string;
+    steps: PipelineStep[];
+    createdAt: string;
 }
 
 export interface GeneratedAsset {
-  id: string;
-  type: 'text' | 'design' | 'code';
-  subtype: string;
-  content: string;
-  metadata: Record<string, unknown> & {
-    format?: string;
-    language?: string;
-    preview?: string;
-  };
-  explanation: AssetExplanation;
+    stepId: string;
+    stepLabel: string;
+    content: string;
+    contentType: "text" | "html" | "markdown" | "json";
+    explanation: string;
 }
 
-export interface AssetExplanation {
-  rationale: string;
-  decisions: string[];
-  alternatives?: string[];
-  attribution?: string[];
+export interface CreationSession {
+    id: string;
+    prompt: string;
+    intent: ParsedIntent | null;
+    pipeline: Pipeline | null;
+    assets: GeneratedAsset[];
+    status: "idle" | "interpreting" | "planning" | "generating" | "done" | "error";
+    error: string | null;
+    createdAt: string;
 }
 
-export interface CreationState {
-  userInput: string;
-  intent: ParsedIntent | null;
-  pipeline: Pipeline | null;
-  assets: GeneratedAsset[];
-  currentStep: number;
-  isProcessing: boolean;
-  error: string | null;
+export interface HistoryEntry {
+    id: string;
+    prompt: string;
+    intentType: IntentType;
+    title: string;
+    createdAt: string;
+    assetCount: number;
 }
