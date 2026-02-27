@@ -21,7 +21,6 @@
   <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white" alt="Vite" />
-  <img src="https://img.shields.io/badge/OpenAI-GPT--4o--mini-412991?logo=openai&logoColor=white" alt="OpenAI" />
   <img src="https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white" alt="Express" />
   <img src="https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind" />
 </p>
@@ -60,12 +59,6 @@ CampusOS transforms **natural language descriptions** into **production-ready di
 > Browse all generated assets with type badges and hover-reveal Open/Download buttons
 
 ![Library](docs/screenshots/history-page.png)
-
-### Poster Viewer
-> Full-screen A4 poster preview with Download HTML and Export PDF buttons
-
-![Poster Viewer](docs/screenshots/poster-viewer.png)
-
 ---
 
 ## 🔄 How It Works
