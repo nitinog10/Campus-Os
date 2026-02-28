@@ -19,11 +19,18 @@ function SlideContent({ slide }: { slide: Slide }) {
                         </div>
                     )}
                     <div className="relative z-10">
-                        <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent leading-tight mb-6">
+                        {"badge" in slide && slide.badge && (
+                            <span className="inline-block mb-6 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-sm text-purple-300"
+                                style={{ animation: "fadeInUp 0.5s ease 0.1s both" }}>
+                                {slide.badge}
+                            </span>
+                        )}
+                        <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent leading-tight mb-6"
+                            style={{ animation: "fadeInUp 0.5s ease 0.2s both" }}>
                             {slide.title}
                         </h1>
-                        <p className="text-xl md:text-2xl text-gray-400 max-w-2xl">{slide.subtitle}</p>
-                        <div className="mt-12 flex items-center gap-2 text-sm text-gray-600">
+                        <p className="text-xl md:text-2xl text-gray-400 max-w-2xl" style={{ animation: "fadeInUp 0.5s ease 0.4s both" }}>{slide.subtitle}</p>
+                        <div className="mt-12 flex items-center gap-2 text-sm text-gray-600" style={{ animation: "fadeInUp 0.5s ease 0.6s both" }}>
                             <span className="w-8 h-[2px] bg-gradient-to-r from-purple-500 to-blue-500" />
                             Use ← → arrow keys to navigate
                             <span className="w-8 h-[2px] bg-gradient-to-r from-blue-500 to-purple-500" />
