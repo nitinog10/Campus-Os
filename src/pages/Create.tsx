@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     RotateCcw,
@@ -13,7 +13,6 @@ import {
     CalendarPlus,
     ArrowRight,
     Zap,
-    CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IntentInput } from "@/components/IntentInput";
@@ -31,7 +30,6 @@ const assetTypes: {
     description: string;
     gradient: string;
     glow: string;
-    borderHover: string;
 }[] = [
         {
             value: "auto",
@@ -40,7 +38,6 @@ const assetTypes: {
             description: "AI picks the best format",
             gradient: "from-purple-500/20 to-pink-500/20",
             glow: "hover:shadow-purple-500/10",
-            borderHover: "hover:border-purple-500/30",
         },
         {
             value: "poster",
@@ -49,7 +46,6 @@ const assetTypes: {
             description: "Event posters & flyers",
             gradient: "from-pink-500/20 to-orange-500/20",
             glow: "hover:shadow-pink-500/10",
-            borderHover: "hover:border-pink-500/30",
         },
         {
             value: "landing",
@@ -58,7 +54,6 @@ const assetTypes: {
             description: "Full website pages",
             gradient: "from-blue-500/20 to-cyan-500/20",
             glow: "hover:shadow-blue-500/10",
-            borderHover: "hover:border-blue-500/30",
         },
         {
             value: "presentation",
@@ -67,30 +62,8 @@ const assetTypes: {
             description: "Slide decks & pitches",
             gradient: "from-indigo-500/20 to-purple-500/20",
             glow: "hover:shadow-indigo-500/10",
-            borderHover: "hover:border-indigo-500/30",
         },
     ];
-
-function SpotlightCard({
-    children,
-    className = "",
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) {
-    const ref = useRef<HTMLDivElement>(null);
-    const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        if (!ref.current) return;
-        const rect = ref.current.getBoundingClientRect();
-        ref.current.style.setProperty("--x", `${e.clientX - rect.left}px`);
-        ref.current.style.setProperty("--y", `${e.clientY - rect.top}px`);
-    }, []);
-    return (
-        <div ref={ref} onMouseMove={onMouseMove} className={`spotlight-card ${className}`}>
-            {children}
-        </div>
-    );
-}
 
 export default function Create() {
     const { session, runCreation, reset } = useCreationEngine();
@@ -114,14 +87,11 @@ export default function Create() {
     const isActive = session.status !== "idle" || isEventMode;
 
     return (
-        <div className="min-h-screen pt-16 noise">
+        <div className="min-h-screen pt-16">
             {/* Background */}
             <div className="fixed inset-0 bg-grid opacity-30 pointer-events-none" />
-            <div className="fixed inset-0 gradient-mesh pointer-events-none" />
-
-            {/* Animated Orbs */}
-            <div className="orb orb-purple w-[350px] h-[350px] fixed top-32 right-10 pointer-events-none" style={{ animationDelay: "0s" }} />
-            <div className="orb orb-blue w-[300px] h-[300px] fixed bottom-32 left-10 pointer-events-none" style={{ animationDelay: "-10s" }} />
+            <div className="fixed top-32 right-10 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="fixed bottom-32 left-10 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative max-w-5xl mx-auto px-6 py-10 md:py-14">
                 {/* ── Hero ─────────────────────────────────────────────── */}
@@ -130,17 +100,17 @@ export default function Create() {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center mb-10"
                 >
-                    <h1 className="font-display text-3xl md:text-5xl font-bold mb-3">
+                    <h1 className="text-3xl md:text-4xl font-bold mb-3">
                         {session.status === "generating" ? (
-                            <span className="gradient-text-animated">
+                            <span className="gradient-text">
                                 Creating your {selectedType === "auto" ? "asset" : selectedType}…
                             </span>
                         ) : session.status === "done" ? (
-                            <span className="gradient-text-animated text-glow">Created!</span>
+                            <span className="gradient-text">Created!</span>
                         ) : (
                             <>
                                 What do you want to{" "}
-                                <span className="gradient-text-animated">create</span>?
+                                <span className="gradient-text">create</span>?
                             </>
                         )}
                     </h1>
@@ -169,24 +139,19 @@ export default function Create() {
                                         initial={{ opacity: 0, y: 12 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.05 + i * 0.04 }}
-                                        whileHover={{ y: -3 }}
+                                        whileHover={{ y: -2 }}
                                         whileTap={{ scale: 0.97 }}
                                         onClick={() => setSelectedType(type.value)}
-                                        className={`relative text-left p-4 rounded-xl border transition-all duration-200 spotlight-card ${active
+                                        className={`relative text-left p-4 rounded-xl border transition-all duration-200 ${active
                                                 ? "glass-strong border-primary/40 glow-purple"
-                                                : `glass border-border/30 ${type.borderHover} hover:shadow-lg ${type.glow}`
+                                                : `glass border-border/30 hover:border-border/60 hover:shadow-lg ${type.glow}`
                                             }`}
-                                        onMouseMove={(e) => {
-                                            const rect = e.currentTarget.getBoundingClientRect();
-                                            e.currentTarget.style.setProperty("--x", `${e.clientX - rect.left}px`);
-                                            e.currentTarget.style.setProperty("--y", `${e.clientY - rect.top}px`);
-                                        }}
                                     >
                                         <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${type.gradient} flex items-center justify-center mb-3 ${active ? "text-primary" : "text-muted-foreground"
-                                            } transition-colors`}>
+                                            }`}>
                                             {type.icon}
                                         </div>
-                                        <p className={`text-sm font-semibold mb-0.5 ${active ? "text-primary" : ""} transition-colors`}>
+                                        <p className={`text-sm font-semibold mb-0.5 ${active ? "text-primary" : ""}`}>
                                             {type.label}
                                         </p>
                                         <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -212,16 +177,16 @@ export default function Create() {
                             whileHover={{ y: -2 }}
                             whileTap={{ scale: 0.99 }}
                             onClick={() => setShowEventModal(true)}
-                            className="w-full p-[1px] rounded-xl border-shimmer group cursor-pointer"
+                            className="w-full p-5 rounded-xl gradient-border group cursor-pointer"
                         >
-                            <div className="flex items-center gap-4 bg-background/80 backdrop-blur-sm rounded-xl p-5">
+                            <div className="flex items-center gap-4 bg-background rounded-xl">
                                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 via-blue-500/20 to-cyan-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
                                     <CalendarPlus className="w-6 h-6 text-primary" />
                                 </div>
                                 <div className="flex-1 text-left min-w-0">
                                     <p className="text-sm font-bold text-foreground group-hover:text-primary transition-colors flex items-center gap-2">
                                         Create Campus Event
-                                        <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider border border-primary/20">
+                                        <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider">
                                             Multi-Asset
                                         </span>
                                     </p>
@@ -266,7 +231,7 @@ export default function Create() {
                                 <button
                                     onClick={() => setPromptMode("guided")}
                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${promptMode === "guided"
-                                            ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
+                                            ? "bg-primary text-primary-foreground shadow-sm"
                                             : "text-muted-foreground hover:text-foreground"
                                         }`}
                                 >
@@ -276,7 +241,7 @@ export default function Create() {
                                 <button
                                     onClick={() => setPromptMode("free")}
                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${promptMode === "free"
-                                            ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
+                                            ? "bg-primary text-primary-foreground shadow-sm"
                                             : "text-muted-foreground hover:text-foreground"
                                         }`}
                                 >
@@ -340,39 +305,13 @@ export default function Create() {
                         className="flex flex-col items-center gap-6 py-20"
                     >
                         <div className="relative">
-                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center border border-primary/10">
+                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
                                 <Loader2 className="w-10 h-10 text-primary animate-spin" />
                             </div>
                             <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-xl animate-pulse-glow" />
-                            {/* Progress ring */}
-                            <svg className="absolute -inset-2 w-[calc(100%+16px)] h-[calc(100%+16px)]" viewBox="0 0 100 100">
-                                <circle
-                                    cx="50" cy="50" r="46"
-                                    fill="none"
-                                    stroke="rgba(168, 85, 247, 0.1)"
-                                    strokeWidth="1.5"
-                                />
-                                <motion.circle
-                                    cx="50" cy="50" r="46"
-                                    fill="none"
-                                    stroke="url(#progressGrad)"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeDasharray="289"
-                                    initial={{ strokeDashoffset: 289 }}
-                                    animate={{ strokeDashoffset: [289, 0] }}
-                                    transition={{ duration: 25, ease: "linear" }}
-                                />
-                                <defs>
-                                    <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stopColor="#a855f7" />
-                                        <stop offset="100%" stopColor="#3b82f6" />
-                                    </linearGradient>
-                                </defs>
-                            </svg>
                         </div>
                         <div className="text-center">
-                            <p className="text-lg font-semibold font-display">
+                            <p className="text-lg font-medium">
                                 AI is building your {selectedType === "auto" ? "asset" : selectedType}
                             </p>
                             <p className="text-sm text-muted-foreground mt-2 max-w-md">
@@ -384,7 +323,7 @@ export default function Create() {
                                 <motion.div
                                     key={i}
                                     className="w-2 h-2 rounded-full bg-primary"
-                                    animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
+                                    animate={{ opacity: [0.3, 1, 0.3] }}
                                     transition={{
                                         duration: 1.2,
                                         repeat: Infinity,
@@ -404,15 +343,13 @@ export default function Create() {
                         className="flex flex-col items-center gap-6 py-16"
                     >
                         <div className="relative">
-                            <div className="w-24 h-24 rounded-2xl bg-green-500/10 flex items-center justify-center border border-green-500/20">
-                                <CheckCircle2 className="w-10 h-10 text-green-400" />
+                            <div className="w-20 h-20 rounded-2xl bg-green-500/10 flex items-center justify-center">
+                                <Sparkles className="w-10 h-10 text-green-400" />
                             </div>
                             <div className="absolute inset-0 bg-green-500 rounded-2xl opacity-10 blur-xl" />
-                            {/* Success ring burst */}
-                            <div className="absolute inset-0 rounded-2xl border-2 border-green-400/40 animate-success-ring" />
                         </div>
                         <div className="text-center">
-                            <h2 className="text-2xl font-bold font-display mb-2">{session.asset.title}</h2>
+                            <h2 className="text-2xl font-bold mb-2">{session.asset.title}</h2>
                             <p className="text-muted-foreground">
                                 Your {session.asset.type} has been generated and opened in a new tab
                             </p>
@@ -426,7 +363,7 @@ export default function Create() {
                                 <ExternalLink className="w-4 h-4" />
                                 Open Viewer
                             </Button>
-                            <Button variant="outline" onClick={reset} className="gap-2 border-border/50 hover:border-primary/30">
+                            <Button variant="outline" onClick={reset} className="gap-2">
                                 <RotateCcw className="w-4 h-4" />
                                 Create Another
                             </Button>
@@ -441,10 +378,10 @@ export default function Create() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="flex flex-col items-center gap-4 py-16"
                     >
-                        <div className="p-5 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400 max-w-md text-center">
+                        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400 max-w-md text-center">
                             {session.error}
                         </div>
-                        <Button variant="outline" onClick={reset} className="gap-2 border-border/50">
+                        <Button variant="outline" onClick={reset} className="gap-2">
                             <RotateCcw className="w-4 h-4" />
                             Try Again
                         </Button>

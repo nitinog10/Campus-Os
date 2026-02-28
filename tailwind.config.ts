@@ -8,7 +8,6 @@ export default {
         extend: {
             fontFamily: {
                 sans: ["Inter", "system-ui", "sans-serif"],
-                display: ["Outfit", "Inter", "system-ui", "sans-serif"],
             },
             colors: {
                 border: "hsl(var(--border))",
@@ -71,19 +70,6 @@ export default {
                     "0%, 100%": { transform: "translateY(0px)" },
                     "50%": { transform: "translateY(-10px)" },
                 },
-                "gradient-shift": {
-                    "0%": { backgroundPosition: "0% 50%" },
-                    "50%": { backgroundPosition: "100% 50%" },
-                    "100%": { backgroundPosition: "0% 50%" },
-                },
-                "glow-pulse": {
-                    "0%, 100%": {
-                        boxShadow: "0 0 20px rgba(168, 85, 247, 0.2), 0 0 40px rgba(99, 102, 241, 0.1)",
-                    },
-                    "50%": {
-                        boxShadow: "0 0 30px rgba(168, 85, 247, 0.35), 0 0 60px rgba(99, 102, 241, 0.15)",
-                    },
-                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
@@ -91,8 +77,6 @@ export default {
                 shimmer: "shimmer 2s linear infinite",
                 "pulse-glow": "pulse-glow 2s ease-in-out infinite",
                 float: "float 3s ease-in-out infinite",
-                "gradient-shift": "gradient-shift 6s ease-in-out infinite",
-                "glow-pulse": "glow-pulse 3s ease-in-out infinite",
             },
         },
     },
