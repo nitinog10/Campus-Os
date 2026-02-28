@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { RotateCcw, ExternalLink, Sparkles, Loader2, Image, Globe, Presentation } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { RotateCcw, ExternalLink, Sparkles, Loader2, Image, Globe, Presentation, Wand2, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IntentInput } from "@/components/IntentInput";
+import { PromptTemplateSelector } from "@/prompt-intelligence";
 import { useCreationEngine } from "@/hooks/useCreationEngine";
 import type { AssetType } from "@/types/campusos";
+
+type PromptMode = "free" | "guided";
 
 const assetTypes: { value: AssetType | "auto"; label: string; icon: React.ReactNode; description: string }[] = [
     { value: "auto", label: "Auto-Detect", icon: <Sparkles className="w-5 h-5" />, description: "AI decides the best format" },
@@ -16,6 +19,7 @@ const assetTypes: { value: AssetType | "auto"; label: string; icon: React.ReactN
 export default function Create() {
     const { session, runCreation, reset } = useCreationEngine();
     const [selectedType, setSelectedType] = useState<AssetType | "auto">("auto");
+    const [promptMode, setPromptMode] = useState<PromptMode>("guided");
     const isActive = session.status !== "idle";
 
     return (
@@ -78,12 +82,73 @@ export default function Create() {
                     </motion.div>
                 )}
 
-                {/* Input */}
+                {/* Prompt Mode Toggle */}
                 {!isActive && (
-                    <IntentInput
-                        onSubmit={(prompt) => runCreation(prompt, selectedType)}
-                        isLoading={false}
-                    />
+                    <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        className="flex justify-center mb-6"
+                    >
+                        <div className="inline-flex items-center gap-1 p-1 rounded-xl glass border border-border/50">
+                            <button
+                                onClick={() => setPromptMode("guided")}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                    promptMode === "guided"
+                                        ? "bg-primary text-primary-foreground shadow-lg"
+                                        : "text-muted-foreground hover:text-foreground"
+                                }`}
+                            >
+                                <Wand2 className="w-4 h-4" />
+                                Guided Prompt
+                            </button>
+                            <button
+                                onClick={() => setPromptMode("free")}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                    promptMode === "free"
+                                        ? "bg-primary text-primary-foreground shadow-lg"
+                                        : "text-muted-foreground hover:text-foreground"
+                                }`}
+                            >
+                                <PenLine className="w-4 h-4" />
+                                Free Prompt
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Input Section */}
+                {!isActive && (
+                    <AnimatePresence mode="wait">
+                        {promptMode === "free" ? (
+                            <motion.div
+                                key="free"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <IntentInput
+                                    onSubmit={(prompt) => runCreation(prompt, selectedType)}
+                                    isLoading={false}
+                                />
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="guided"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <PromptTemplateSelector
+                                    assetType={selectedType}
+                                    onPromptReady={(prompt) => runCreation(prompt, selectedType)}
+                                    isLoading={false}
+                                />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 )}
 
                 {/* Generating State */}
