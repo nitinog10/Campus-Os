@@ -489,19 +489,15 @@ Campus-Os/
 ├── 📄 tailwind.config.ts         # Tailwind + custom animations
 │
 ├── 📁 docs/screenshots/          # UI screenshots for README
-│   ├── homepage.png
-│   ├── create-page.png
-│   ├── history-page.png
-│   └── poster-viewer.png
 │
 ├── 📁 src/                       # ── Frontend ──────────────
 │   ├── App.tsx                   # Router (layout vs full-screen)
 │   ├── main.tsx                  # React entry
-│   ├── index.css                 # Design system
+│   ├── index.css                 # Design system (glass, gradients, glows, keyframes)
 │   │
 │   ├── 📁 pages/
-│   │   ├── Home.tsx              # Hero + features
-│   │   ├── Create.tsx            # Type selector + prompt → generate
+│   │   ├── Home.tsx              # Hero + features + Event Mode CTA
+│   │   ├── Create.tsx            # Visual card selector + prompt + event CTA
 │   │   ├── History.tsx           # Asset library with open/download
 │   │   ├── NotFound.tsx          # 404
 │   │   └── 📁 viewers/
@@ -509,9 +505,22 @@ Campus-Os/
 │   │       ├── LandingPageViewer.tsx # Full-page iframe viewer
 │   │       └── PresentationViewer.tsx # Slide navigation + PDF
 │   │
+│   ├── 📁 prompt-intelligence/   # ── Prompt Intelligence Layer ──
+│   │   ├── index.ts              # Barrel exports
+│   │   ├── promptTemplates.ts    # 7 template configs with fields & basePrompt builders
+│   │   ├── buildPrompt.ts        # Prompt building, validation, preview utilities
+│   │   └── PromptTemplateSelector.tsx # Visual card picker + grouped form + live preview
+│   │
+│   ├── 📁 events/                # ── Campus Event Mode ──
+│   │   ├── index.ts              # Barrel exports
+│   │   ├── eventStore.ts         # localStorage CRUD for CampusEvent entities
+│   │   ├── useEventGenerator.ts  # Sequential multi-asset generation hook
+│   │   ├── CreateEventModal.tsx  # 2-step wizard (Details → Asset selection)
+│   │   └── EventAssetGroup.tsx   # Rich card display with progress & status badges
+│   │
 │   ├── 📁 components/
-│   │   ├── Header.tsx            # Glassmorphic nav
-│   │   ├── IntentInput.tsx       # Prompt textarea + examples  
+│   │   ├── Header.tsx            # Glassmorphic responsive nav
+│   │   ├── IntentInput.tsx       # Prompt textarea + labeled examples + char count
 │   │   └── 📁 ui/               # shadcn/ui primitives (8 files)
 │   │
 │   ├── 📁 services/
@@ -519,10 +528,13 @@ Campus-Os/
 │   │   └── assetRegistry.ts      # localStorage asset CRUD
 │   │
 │   ├── 📁 hooks/
-│   │   └── useCreationEngine.ts  # State machine
+│   │   └── useCreationEngine.ts  # State machine for single asset creation
+│   │
+│   ├── 📁 lib/
+│   │   └── utils.ts              # Tailwind merge utility
 │   │
 │   └── 📁 types/
-│       └── campusos.ts           # All TypeScript interfaces
+│       └── campusos.ts           # All TypeScript interfaces (incl. CampusEvent)
 │
 └── 📁 server/                    # ── Backend ──────────────
     ├── server.js                 # Express entry
@@ -539,12 +551,14 @@ Campus-Os/
 
 | Layer | Technologies |
 |-------|-------------|
-| **Frontend** | React 18, TypeScript, Vite 5.4, TailwindCSS 3.4, shadcn/ui, Framer Motion |
+| **Frontend** | React 18, TypeScript 5.8, Vite 5.4, TailwindCSS 3.4, shadcn/ui (Radix UI), Framer Motion 11 |
 | **Backend** | Express.js 4.21, OpenAI SDK 4.77 |
+| **AI** | GPT-4o-mini (intent interpretation + asset generation) |
 | **Viewers** | html2canvas, jsPDF (PDF export) |
 | **Images** | Unsplash CDN (embedded by AI in generated output) |
-| **State** | localStorage (asset registry), React hooks |
-| **Design** | Dark mode, glassmorphism, gradient text, glow effects, CSS animations |
+| **State** | localStorage (asset registry + event store), React hooks (state machine, event generator) |
+| **Design** | Dark mode, glassmorphism, gradient borders & text, neon glow effects, shimmer/pulse/float CSS keyframes |
+| **Icons** | Lucide React |
 
 ---
 
