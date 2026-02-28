@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Send, Loader2 } from "lucide-react";
+import { Sparkles, Send, Loader2, Lightbulb, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -10,15 +10,33 @@ interface IntentInputProps {
 }
 
 const examplePrompts = [
-    "Create a poster for our college tech fest 'TechNova 2026' with a futuristic theme",
-    "Build a landing page for our coding club showcasing upcoming workshops",
-    "Make a pitch deck for our startup idea — an AI-powered study planner",
-    "Design social media posts for our college cultural festival",
+    {
+        label: "Tech Fest Poster",
+        prompt: "Create a poster for our college tech fest 'TechNova 2026' with a futuristic neon theme",
+    },
+    {
+        label: "Club Landing Page",
+        prompt: "Build a landing page for our coding club showcasing upcoming workshops and team members",
+    },
+    {
+        label: "Startup Pitch Deck",
+        prompt: "Make a pitch deck for our startup idea — an AI-powered study planner for college students",
+    },
+    {
+        label: "Cultural Fest Poster",
+        prompt: "Design a colorful poster for our annual cultural festival 'Vivacity' happening in March",
+    },
 ];
 
 export function IntentInput({ onSubmit, isLoading }: IntentInputProps) {
     const [prompt, setPrompt] = useState("");
     const [showExamples, setShowExamples] = useState(true);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const charCount = prompt.length;
+
+    useEffect(() => {
+        textareaRef.current?.focus();
+    }, []);
 
     const handleSubmit = () => {
         if (!prompt.trim() || isLoading) return;
@@ -30,6 +48,13 @@ export function IntentInput({ onSubmit, isLoading }: IntentInputProps) {
         if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
             handleSubmit();
         }
+    };
+
+    const handleExampleClick = (text: string) => {
+        setPrompt(text);
+        setShowExamples(false);
+        // Focus the textarea so user can edit before submitting
+        setTimeout(() => textareaRef.current?.focus(), 50);
     };
 
     return (
@@ -44,9 +69,14 @@ export function IntentInput({ onSubmit, isLoading }: IntentInputProps) {
                 <div className="relative bg-background rounded-2xl p-1">
                     <div className="relative">
                         <Textarea
+                            ref={textareaRef}
                             id="intent-input"
                             value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
+                            onChange={(e) => {
+                                setPrompt(e.target.value);
+                                if (showExamples && e.target.value.length > 0) setShowExamples(false);
+                                if (e.target.value.length === 0) setShowExamples(true);
+                            }}
                             onKeyDown={handleKeyDown}
                             placeholder="Describe what you want to create…"
                             className="min-h-[140px] resize-none border-0 bg-transparent text-base focus-visible:ring-0 focus-visible:ring-offset-0 pr-14"
@@ -76,7 +106,14 @@ export function IntentInput({ onSubmit, isLoading }: IntentInputProps) {
                             <kbd className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px] font-mono">Enter</kbd>
                             {" to submit"}
                         </p>
-                        <Sparkles className="w-4 h-4 text-primary/40 animate-pulse-glow" />
+                        <div className="flex items-center gap-3">
+                            {charCount > 0 && (
+                                <span className={`text-[10px] transition-colors ${charCount > 500 ? "text-amber-400" : "text-muted-foreground/50"}`}>
+                                    {charCount}
+                                </span>
+                            )}
+                            <Sparkles className="w-4 h-4 text-primary/40 animate-pulse-glow" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,10 +126,11 @@ export function IntentInput({ onSubmit, isLoading }: IntentInputProps) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3, delay: 0.4 }}
-                        className="mt-6 space-y-2"
+                        className="mt-6 space-y-3"
                     >
-                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider px-1">
-                            Try an example
+                        <p className="text-xs text-muted-foreground font-medium flex items-center gap-1.5 px-1">
+                            <Lightbulb className="w-3 h-3 text-primary/60" />
+                            Try an example to get started
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {examplePrompts.map((example, i) => (
@@ -100,15 +138,17 @@ export function IntentInput({ onSubmit, isLoading }: IntentInputProps) {
                                     key={i}
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5 + i * 0.1 }}
-                                    onClick={() => {
-                                        setPrompt(example);
-                                        setShowExamples(false);
-                                    }}
-                                    className="text-left text-sm text-muted-foreground hover:text-foreground p-3 rounded-xl glass hover:glass-strong transition-all duration-200 cursor-pointer group"
+                                    transition={{ delay: 0.5 + i * 0.08 }}
+                                    onClick={() => handleExampleClick(example.prompt)}
+                                    className="text-left p-3 rounded-xl glass hover:glass-strong hover:border-primary/20 transition-all duration-200 cursor-pointer group"
                                 >
-                                    <span className="text-primary/60 group-hover:text-primary mr-2">→</span>
-                                    {example}
+                                    <p className="text-xs font-semibold text-primary/70 group-hover:text-primary mb-1 flex items-center gap-1.5">
+                                        <ArrowRight className="w-3 h-3 opacity-0 -ml-3 group-hover:opacity-100 group-hover:ml-0 transition-all duration-200" />
+                                        {example.label}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground/80 group-hover:text-muted-foreground line-clamp-2 leading-relaxed">
+                                        {example.prompt}
+                                    </p>
                                 </motion.button>
                             ))}
                         </div>
