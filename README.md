@@ -137,7 +137,7 @@ flowchart LR
     style F fill:#1e1b4b,stroke:#f59e0b,color:#e2e8f0
 ```
 
-### Step-by-Step Flow
+### Step-by-Step Flow — Single Asset
 
 ```mermaid
 sequenceDiagram
@@ -164,6 +164,31 @@ sequenceDiagram
     
     Note over User: Full-screen dedicated viewer
     User->>User: Download HTML / Export PDF
+```
+
+### Step-by-Step Flow — Campus Event Mode
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Modal as Event Wizard
+    participant Hook as useEventGenerator
+    participant API as Express Backend
+    participant Store as Event Store
+
+    User->>Modal: Step 1 — Fill event details
+    User->>Modal: Step 2 — Select asset types
+    Modal->>Hook: Submit event + selected types
+    Hook->>Store: Save event to localStorage
+
+    loop For each selected type (poster → landing → presentation)
+        Hook->>API: POST /api/generate { prompt, assetType }
+        API-->>Hook: Generated asset
+        Hook->>Store: Link asset ID to event
+        Note over Hook: Update status: Queued → Generating → Complete
+    end
+
+    Hook-->>User: All assets ready — Open All
 ```
 
 ### What Happens Per Asset Type
@@ -203,13 +228,20 @@ graph TB
     subgraph Client["🖥️ Frontend — React + Vite + TailwindCSS"]
         Pages["Pages\nHome | Create | History"]
         Viewers["Dedicated Viewers\nPosterViewer | LandingPageViewer | PresentationViewer"]
+        PromptIntel["Prompt Intelligence\nTemplates | Builder | Selector"]
+        EventMode["Event Mode\nWizard | Generator | Store"]
         Hook["useCreationEngine\n(state machine)"]
         APIClient["API Service\n(fetch → /api/generate)"]
         Registry["Asset Registry\n(localStorage)"]
+        EventStore["Event Store\n(localStorage)"]
         
         Pages <--> Hook
+        Pages <--> PromptIntel
+        Pages <--> EventMode
         Hook <--> APIClient
         Hook --> Registry
+        EventMode --> APIClient
+        EventMode --> EventStore
         Viewers --> Registry
     end
     
@@ -430,11 +462,20 @@ Or use `npm run dev:all` to run both concurrently.
 
 ### 4. Create Something
 
+**Single Asset:**
 1. Open **http://localhost:5173/create**
 2. Select asset type (Poster / Landing Page / Presentation)
-3. Type your prompt
-4. Wait ~20 seconds for AI to generate
-5. Viewer opens automatically in a new tab
+3. Toggle **Guided** mode for smart templates, or stay on **Free** for raw text
+4. Fill in the template fields (or type your prompt)
+5. Wait ~20 seconds for AI to generate
+6. Viewer opens automatically in a new tab
+
+**Campus Event Mode:**
+1. Click the **Create Event** card on the Create page (or the button in the hero)
+2. Step 1: Fill in event details (name, date, venue, etc.)
+3. Step 2: Pick which assets to generate (Poster, Landing Page, Presentation)
+4. Watch sequential generation with live status tracking
+5. Click **Open All Assets** when done
 
 ---
 
