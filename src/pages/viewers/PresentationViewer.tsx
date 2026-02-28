@@ -144,7 +144,96 @@ function SlideContent({ slide }: { slide: Slide }) {
                             {slide.title}
                         </h1>
                         <p className="text-xl text-gray-400 mb-4">{slide.subtitle}</p>
-                        {slide.note && <p className="text-sm text-gray-500">{slide.note}</p>}
+                        {slide.links && slide.links.length > 0 && (
+                            <div className="flex gap-4 mt-6 justify-center flex-wrap">
+                                {slide.links.map((link, i) => (
+                                    <span key={i} className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300">
+                                        {link}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                        {slide.note && <p className="text-sm text-gray-500 mt-4">{slide.note}</p>}
+                    </div>
+                </div>
+            );
+
+        case "quote":
+            return (
+                <div className="flex flex-col items-center justify-center h-full px-16 text-center">
+                    <div className="relative max-w-3xl">
+                        <span className="absolute -top-8 -left-4 text-8xl text-purple-500/20 font-serif leading-none">"</span>
+                        <p className="text-2xl md:text-3xl font-light text-white/90 leading-relaxed italic mb-8" style={{ animation: "fadeInUp 0.6s ease both" }}>
+                            {slide.quote}
+                        </p>
+                        <span className="absolute -bottom-12 -right-4 text-8xl text-purple-500/20 font-serif leading-none rotate-180">"</span>
+                    </div>
+                    <div className="flex items-center gap-4 mt-8" style={{ animation: "fadeInUp 0.6s ease 0.3s both" }}>
+                        {slide.image && (
+                            <img src={slide.image} alt={slide.author} className="w-14 h-14 rounded-full object-cover border-2 border-purple-500/30" crossOrigin="anonymous" />
+                        )}
+                        <div className="text-left">
+                            <p className="font-semibold text-white">{slide.author}</p>
+                            {slide.role && <p className="text-sm text-gray-400">{slide.role}</p>}
+                        </div>
+                    </div>
+                </div>
+            );
+
+        case "team":
+            return (
+                <div className="flex flex-col items-center justify-center h-full px-16">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">{slide.title}</h2>
+                    <div className="flex flex-wrap justify-center gap-8 max-w-5xl">
+                        {slide.members.map((member, i) => (
+                            <div
+                                key={i}
+                                className="flex flex-col items-center text-center group"
+                                style={{ animation: `fadeInUp 0.5s ease ${i * 0.1}s both` }}
+                            >
+                                <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-white/10 group-hover:border-purple-500/40 transition-all mb-4 shadow-lg shadow-purple-500/5">
+                                    {member.image ? (
+                                        <img src={member.image} alt={member.name} className="w-full h-full object-cover" crossOrigin="anonymous" />
+                                    ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-purple-500/30 to-blue-500/30 flex items-center justify-center text-3xl font-bold text-white/50">
+                                            {member.name.charAt(0)}
+                                        </div>
+                                    )}
+                                </div>
+                                <p className="font-semibold text-white text-sm md:text-base">{member.name}</p>
+                                <p className="text-xs md:text-sm text-gray-400">{member.role}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+        case "timeline":
+            return (
+                <div className="flex flex-col justify-center h-full px-16 md:px-24">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">{slide.title}</h2>
+                    <div className="relative max-w-3xl mx-auto w-full">
+                        {/* Vertical line */}
+                        <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-purple-500 via-blue-500 to-purple-500/0" />
+                        <div className="space-y-6">
+                            {slide.items.map((item, i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-start gap-6 pl-0"
+                                    style={{ animation: `fadeInUp 0.5s ease ${i * 0.1}s both` }}
+                                >
+                                    {/* Dot */}
+                                    <div className="w-12 h-12 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center shrink-0 relative z-10 backdrop-blur-sm">
+                                        <span className="text-xs font-bold text-purple-400">{item.time}</span>
+                                    </div>
+                                    {/* Content */}
+                                    <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex-1 hover:border-purple-500/20 transition-colors">
+                                        <p className="font-semibold text-white">{item.title}</p>
+                                        {item.description && <p className="text-sm text-gray-400 mt-1">{item.description}</p>}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             );
@@ -261,6 +350,47 @@ export default function PresentationViewer() {
                 pdf.text(slide.right.heading, width / 2 + 10, 55);
                 slide.right.items.forEach((item, j) => {
                     pdf.text(`• ${item}`, width / 2 + 15, 70 + j * 14);
+                });
+            } else if (slide.type === "quote") {
+                pdf.setFontSize(20);
+                pdf.setTextColor(200, 200, 210);
+                const quoteText = `"${slide.quote}"`;
+                const splitQuote = pdf.splitTextToSize(quoteText, width - 60);
+                pdf.text(splitQuote, width / 2, height / 2 - 20, { align: "center" });
+                pdf.setFontSize(14);
+                pdf.setTextColor(168, 85, 247);
+                pdf.text(`— ${slide.author}${slide.role ? `, ${slide.role}` : ""}`, width / 2, height / 2 + 20, { align: "center" });
+            } else if (slide.type === "team") {
+                pdf.setFontSize(24);
+                pdf.text(slide.title, width / 2, 30, { align: "center" });
+                pdf.setFontSize(14);
+                const memberWidth = width / Math.min(slide.members.length, 5);
+                slide.members.forEach((member, j) => {
+                    const x = memberWidth * j + memberWidth / 2;
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.text(member.name, x, height / 2, { align: "center" });
+                    pdf.setFontSize(12);
+                    pdf.setTextColor(150, 150, 160);
+                    pdf.text(member.role, x, height / 2 + 12, { align: "center" });
+                    pdf.setFontSize(14);
+                });
+            } else if (slide.type === "timeline") {
+                pdf.setFontSize(24);
+                pdf.text(slide.title, width / 2, 30, { align: "center" });
+                pdf.setFontSize(12);
+                pdf.setTextColor(200, 200, 210);
+                slide.items.forEach((item, j) => {
+                    pdf.setTextColor(168, 85, 247);
+                    pdf.text(item.time, 25, 55 + j * 22);
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.setFontSize(14);
+                    pdf.text(item.title, 65, 55 + j * 22);
+                    if (item.description) {
+                        pdf.setFontSize(11);
+                        pdf.setTextColor(150, 150, 160);
+                        pdf.text(item.description, 65, 63 + j * 22);
+                    }
+                    pdf.setFontSize(12);
                 });
             }
         });
