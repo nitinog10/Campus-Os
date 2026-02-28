@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Zap, Layers, Palette, FileText, Globe } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, Layers, Palette, FileText, Globe, CalendarPlus, Image, Presentation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -13,8 +13,8 @@ const features = [
     },
     {
         icon: Layers,
-        title: "Smart Pipeline",
-        description: "Automatic execution planning breaks your request into optimal steps.",
+        title: "Smart Templates",
+        description: "Guided forms for different use cases auto-build the perfect AI prompt.",
         gradient: "from-blue-500 to-cyan-500",
     },
     {
@@ -30,16 +30,22 @@ const creationTypes = [
         icon: Palette,
         label: "Event Posters",
         description: "Promotional content for fests, hackathons & workshops",
+        gradient: "from-pink-500/15 to-orange-500/15",
+        iconColor: "text-pink-400",
     },
     {
         icon: Globe,
         label: "Landing Pages",
         description: "Complete websites for clubs, projects & portfolios",
+        gradient: "from-blue-500/15 to-cyan-500/15",
+        iconColor: "text-blue-400",
     },
     {
         icon: FileText,
         label: "Presentations",
         description: "Slide decks for assignments, pitches & reports",
+        gradient: "from-purple-500/15 to-indigo-500/15",
+        iconColor: "text-purple-400",
     },
 ];
 
