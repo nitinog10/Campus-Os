@@ -82,20 +82,26 @@ export default function Home() {
                         </h1>
 
                         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-                            An AI-powered orchestration platform that transforms your descriptions
-                            into ready-to-use posters, websites, and presentations.
+                            Transform your ideas into polished posters, websites, and presentations.
+                            Just describe what you need — AI does the rest.
                         </p>
 
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="flex flex-col sm:flex-row gap-4 justify-center"
+                            className="flex flex-col sm:flex-row gap-3 justify-center"
                         >
                             <Link to="/create">
                                 <Button variant="glow" size="lg" className="gap-2 text-base px-8">
                                     Start Creating
                                     <ArrowRight className="w-4 h-4" />
+                                </Button>
+                            </Link>
+                            <Link to="/create" onClick={() => {/* will open event modal in create page */}}>
+                                <Button variant="outline" size="lg" className="gap-2 text-base px-6">
+                                    <CalendarPlus className="w-4 h-4" />
+                                    Create Event
                                 </Button>
                             </Link>
                         </motion.div>
@@ -177,7 +183,7 @@ export default function Home() {
                                 <Link to="/create">
                                     <Card className="glass border-border/50 hover:border-primary/30 hover:glow-purple transition-all duration-300 cursor-pointer group">
                                         <CardContent className="p-6 flex items-start gap-4">
-                                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:bg-primary/20 transition-colors">
+                                            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${type.gradient} flex items-center justify-center ${type.iconColor} shrink-0 group-hover:scale-110 transition-transform duration-300`}>
                                                 <Icon className="w-5 h-5" />
                                             </div>
                                             <div>
@@ -191,6 +197,48 @@ export default function Home() {
                         );
                     })}
                 </div>
+            </section>
+
+            {/* Event Mode Highlight */}
+            <section className="max-w-7xl mx-auto px-6 pb-24">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                >
+                    <Link to="/create">
+                        <div className="relative p-8 md:p-12 rounded-2xl gradient-border overflow-hidden group cursor-pointer">
+                            <div className="relative bg-background rounded-2xl flex flex-col md:flex-row items-center gap-6 md:gap-10">
+                                <div className="flex -space-x-3">
+                                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-pink-500/20 to-orange-500/20 flex items-center justify-center border border-pink-500/20 shadow-lg">
+                                        <Image className="w-6 h-6 text-pink-400" />
+                                    </div>
+                                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center border border-blue-500/20 shadow-lg">
+                                        <Globe className="w-6 h-6 text-blue-400" />
+                                    </div>
+                                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500/20 to-indigo-500/20 flex items-center justify-center border border-purple-500/20 shadow-lg">
+                                        <Presentation className="w-6 h-6 text-purple-400" />
+                                    </div>
+                                </div>
+                                <div className="flex-1 text-center md:text-left">
+                                    <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
+                                        <h3 className="text-xl md:text-2xl font-bold">Campus Event Mode</h3>
+                                        <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+                                            New
+                                        </span>
+                                    </div>
+                                    <p className="text-muted-foreground max-w-lg">
+                                        Create one event and automatically generate a coordinated poster, landing page, and presentation — all matching your event's theme.
+                                    </p>
+                                </div>
+                                <Button variant="glow" className="gap-2 shrink-0 group-hover:shadow-xl transition-shadow">
+                                    Try It
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                </Button>
+                            </div>
+                        </div>
+                    </Link>
+                </motion.div>
             </section>
 
             {/* Footer */}

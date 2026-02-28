@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Cpu, Plus, Clock, Sparkles } from "lucide-react";
+import { Cpu, Plus, Clock, Sparkles, CalendarPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Header() {
@@ -17,22 +17,22 @@ export function Header() {
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="fixed top-0 left-0 right-0 z-50 glass-strong"
+            className="fixed top-0 left-0 right-0 z-50 glass-strong border-b border-border/30"
         >
-            <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
                 {/* Logo */}
-                <Link to="/" className="flex items-center gap-3 group">
+                <Link to="/" className="flex items-center gap-2.5 group">
                     <div className="relative">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center shadow-lg shadow-purple-500/20 group-hover:shadow-purple-500/40 transition-shadow duration-300">
                             <Cpu className="w-5 h-5 text-white" />
                         </div>
                         <div className="absolute -inset-1 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl opacity-0 group-hover:opacity-20 blur-md transition-opacity duration-300" />
                     </div>
-                    <span className="text-lg font-bold gradient-text">CampusOS</span>
+                    <span className="text-lg font-bold gradient-text hidden sm:inline">CampusOS</span>
                 </Link>
 
                 {/* Navigation */}
-                <nav className="flex items-center gap-1">
+                <nav className="flex items-center gap-0.5 sm:gap-1">
                     {navItems.map((item) => {
                         const isActive = location.pathname === item.path;
                         const Icon = item.icon;
@@ -41,10 +41,10 @@ export function Header() {
                                 <Button
                                     variant={isActive ? "secondary" : "ghost"}
                                     size="sm"
-                                    className={`relative gap-2 ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                                    className={`relative gap-1.5 px-2.5 sm:px-3 ${isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
                                 >
                                     <Icon className="w-4 h-4" />
-                                    {item.label}
+                                    <span className="hidden sm:inline">{item.label}</span>
                                     {isActive && (
                                         <motion.div
                                             layoutId="activeNav"
