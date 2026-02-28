@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RotateCcw, ExternalLink, Sparkles, Loader2, Image, Globe, Presentation, Wand2, PenLine, CalendarPlus } from "lucide-react";
+import { RotateCcw, ExternalLink, Sparkles, Loader2, Image, Globe, Presentation, Wand2, PenLine, CalendarPlus, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IntentInput } from "@/components/IntentInput";
 import { PromptTemplateSelector } from "@/prompt-intelligence";
@@ -10,11 +10,11 @@ import type { AssetType, CampusEvent } from "@/types/campusos";
 
 type PromptMode = "free" | "guided";
 
-const assetTypes: { value: AssetType | "auto"; label: string; icon: React.ReactNode; description: string }[] = [
-    { value: "auto", label: "Auto-Detect", icon: <Sparkles className="w-5 h-5" />, description: "AI decides the best format" },
-    { value: "poster", label: "Poster", icon: <Image className="w-5 h-5" />, description: "Event posters & flyers" },
-    { value: "landing", label: "Landing Page", icon: <Globe className="w-5 h-5" />, description: "Full website pages" },
-    { value: "presentation", label: "Presentation", icon: <Presentation className="w-5 h-5" />, description: "Slide decks" },
+const assetTypes: { value: AssetType | "auto"; label: string; icon: React.ReactNode; shortDesc: string }[] = [
+    { value: "auto", label: "Auto", icon: <Sparkles className="w-4 h-4" />, shortDesc: "AI decides" },
+    { value: "poster", label: "Poster", icon: <Image className="w-4 h-4" />, shortDesc: "Event flyers" },
+    { value: "landing", label: "Landing Page", icon: <Globe className="w-4 h-4" />, shortDesc: "Websites" },
+    { value: "presentation", label: "Presentation", icon: <Presentation className="w-4 h-4" />, shortDesc: "Slide decks" },
 ];
 
 export default function Create() {
@@ -71,90 +71,74 @@ export default function Create() {
                     )}
                 </motion.div>
 
-                {/* Asset Type Selector */}
+                {/* ── Controls Bar (Type + Mode + Event) ───────────────── */}
                 {!isActive && (
                     <motion.div
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="flex flex-wrap justify-center gap-3 mb-8"
+                        className="max-w-3xl mx-auto mb-8"
                     >
-                        {assetTypes.map((type) => (
-                            <button
-                                key={type.value}
-                                onClick={() => setSelectedType(type.value)}
-                                className={`relative flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-200 cursor-pointer group ${selectedType === type.value
-                                        ? "glass-strong border border-primary/30 text-primary glow-purple"
-                                        : "glass border border-transparent text-muted-foreground hover:text-foreground hover:border-border/50"
-                                    }`}
-                            >
-                                {type.icon}
-                                <div className="text-left">
-                                    <p className="text-sm font-medium">{type.label}</p>
-                                    <p className="text-[11px] text-muted-foreground">{type.description}</p>
-                                </div>
-                            </button>
-                        ))}
-                    </motion.div>
-                )}
-
-                {/* Create Event Button */}
-                {!isActive && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.12 }}
-                        className="flex justify-center mb-6"
-                    >
-                        <button
-                            onClick={() => setShowEventModal(true)}
-                            className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl glass-strong border border-dashed border-primary/30 text-primary hover:border-primary/50 hover:glow-purple transition-all duration-200 group"
-                        >
-                            <CalendarPlus className="w-4.5 h-4.5 group-hover:scale-110 transition-transform" />
-                            <div className="text-left">
-                                <p className="text-sm font-medium">Create Campus Event</p>
-                                <p className="text-[10px] text-muted-foreground">Generate poster + landing page + presentation at once</p>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                            {/* Asset Type Selector — pill bar */}
+                            <div className="flex-1 flex items-center gap-1 p-1 rounded-xl glass border border-border/50">
+                                {assetTypes.map((type) => (
+                                    <button
+                                        key={type.value}
+                                        onClick={() => setSelectedType(type.value)}
+                                        className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 justify-center ${
+                                            selectedType === type.value
+                                                ? "bg-primary text-primary-foreground shadow-md"
+                                                : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                                        }`}
+                                    >
+                                        {type.icon}
+                                        <span className="hidden sm:inline">{type.label}</span>
+                                    </button>
+                                ))}
                             </div>
-                        </button>
-                    </motion.div>
-                )}
 
-                {/* Prompt Mode Toggle */}
-                {!isActive && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.15 }}
-                        className="flex justify-center mb-6"
-                    >
-                        <div className="inline-flex items-center gap-1 p-1 rounded-xl glass border border-border/50">
+                            {/* Mode toggle — compact */}
+                            <div className="flex items-center gap-1 p-1 rounded-xl glass border border-border/50 shrink-0">
+                                <button
+                                    onClick={() => setPromptMode("guided")}
+                                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                        promptMode === "guided"
+                                            ? "bg-primary text-primary-foreground shadow-md"
+                                            : "text-muted-foreground hover:text-foreground"
+                                    }`}
+                                >
+                                    <Wand2 className="w-3.5 h-3.5" />
+                                    Guided
+                                </button>
+                                <button
+                                    onClick={() => setPromptMode("free")}
+                                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                        promptMode === "free"
+                                            ? "bg-primary text-primary-foreground shadow-md"
+                                            : "text-muted-foreground hover:text-foreground"
+                                    }`}
+                                >
+                                    <PenLine className="w-3.5 h-3.5" />
+                                    Free
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Event mode CTA — subtle, below the controls */}
+                        <div className="flex justify-center mt-4">
                             <button
-                                onClick={() => setPromptMode("guided")}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    promptMode === "guided"
-                                        ? "bg-primary text-primary-foreground shadow-lg"
-                                        : "text-muted-foreground hover:text-foreground"
-                                }`}
+                                onClick={() => setShowEventModal(true)}
+                                className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors group"
                             >
-                                <Wand2 className="w-4 h-4" />
-                                Guided Prompt
-                            </button>
-                            <button
-                                onClick={() => setPromptMode("free")}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    promptMode === "free"
-                                        ? "bg-primary text-primary-foreground shadow-lg"
-                                        : "text-muted-foreground hover:text-foreground"
-                                }`}
-                            >
-                                <PenLine className="w-4 h-4" />
-                                Free Prompt
+                                <CalendarPlus className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                                <span>Or create a <strong className="text-foreground/80 group-hover:text-primary">Campus Event</strong> with multiple linked assets</span>
                             </button>
                         </div>
                     </motion.div>
                 )}
 
-                {/* Input Section */}
+                {/* ── Input Section ────────────────────────────────────── */}
                 {!isActive && (
                     <AnimatePresence mode="wait">
                         {promptMode === "free" ? (
