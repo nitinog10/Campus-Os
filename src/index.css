@@ -50,11 +50,18 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+  ::selection {
+    background: rgba(168, 85, 247, 0.25);
+    color: #f1f5f9;
   }
 }
 
@@ -81,6 +88,22 @@
   background-clip: text;
 }
 
+.gradient-text-animated {
+  background: linear-gradient(
+    135deg,
+    #a855f7 0%,
+    #6366f1 25%,
+    #3b82f6 50%,
+    #06b6d4 75%,
+    #a855f7 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
 .gradient-border {
   position: relative;
 }
@@ -98,6 +121,29 @@
   pointer-events: none;
 }
 
+/* ─── Animated Gradient Border (Shimmer Spin) ─────── */
+.border-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.border-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--border-angle, 0deg),
+    #a855f7, #6366f1, #3b82f6, #06b6d4, #a855f7
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: border-rotate 4s linear infinite;
+}
+
 /* ─── Glow Effects ────────────────────────────────── */
 .glow-purple {
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.15),
@@ -109,12 +155,94 @@
               0 0 60px rgba(59, 130, 246, 0.05);
 }
 
+.text-glow {
+  text-shadow: 0 0 30px rgba(168, 85, 247, 0.4),
+               0 0 60px rgba(99, 102, 241, 0.2);
+}
+
+.text-glow-sm {
+  text-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+
+/* ─── Spotlight Card (mouse-follow via JS) ────────── */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    600px circle at var(--x, 50%) var(--y, 50%),
+    rgba(168, 85, 247, 0.06),
+    transparent 40%
+  );
+}
+.spotlight-card:hover::after {
+  opacity: 1;
+}
+
+/* ─── Noise Texture Overlay ───────────────────────── */
+.noise {
+  position: relative;
+}
+.noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  z-index: 1;
+}
+
+/* ─── Animated Gradient Orbs ──────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: orb-drift 20s ease-in-out infinite alternate;
+}
+.orb-purple {
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+}
+.orb-blue {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+}
+.orb-cyan {
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+}
+
+@keyframes orb-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.05); }
+  50% { transform: translate(-20px, 30px) scale(0.95); }
+  75% { transform: translate(20px, 10px) scale(1.02); }
+  100% { transform: translate(-10px, -30px) scale(1); }
+}
+
 /* ─── Animated Background ─────────────────────────── */
 .bg-grid {
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 64px 64px;
+}
+
+/* ─── Gradient Mesh Background ────────────────────── */
+.gradient-mesh {
+  background:
+    radial-gradient(at 20% 30%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(at 50% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
 }
 
 /* ─── Shimmer ─────────────────────────────────────── */
@@ -152,6 +280,47 @@
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* ─── Gradient Shift ──────────────────────────────── */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ─── Border Rotate (conic gradient spin) ─────────── */
+@keyframes border-rotate {
+  to { --border-angle: 360deg; }
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ─── Glow Pulse for decorative elements ──────────── */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.2), 0 0 40px rgba(99, 102, 241, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.35), 0 0 60px rgba(99, 102, 241, 0.15);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ─── Success burst ───────────────────────────────── */
+@keyframes success-ring {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+.animate-success-ring {
+  animation: success-ring 1s ease-out forwards;
 }
 
 /* ─── Scrollbar ───────────────────────────────────── */
