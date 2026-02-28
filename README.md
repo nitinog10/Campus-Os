@@ -10,6 +10,7 @@
 
 <p align="center">
   <a href="#-quick-start">Quick Start</a> •
+  <a href="#-features">Features</a> •
   <a href="#-how-it-works">How It Works</a> •
   <a href="#-architecture">Architecture</a> •
   <a href="#-viewers">Viewers</a> •
@@ -23,6 +24,7 @@
   <img src="https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white" alt="Express" />
   <img src="https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Framer_Motion-11-FF0055?logo=framer&logoColor=white" alt="Framer Motion" />
 </p>
 
 ---
@@ -43,15 +45,69 @@ CampusOS transforms **natural language descriptions** into **production-ready di
 
 ---
 
+## ✨ Features
+
+### 🎨 Prompt Intelligence Layer
+
+Instead of staring at a blank text box, CampusOS offers a **Guided Prompt mode** with structured templates for every asset type. Templates auto-build the perfect AI prompt from simple form fields.
+
+| Template | Asset Type | Use Case |
+|----------|-----------|----------|
+| Event Poster | Poster | College fests, hackathons, workshops |
+| Club Recruitment | Poster | Recruiting members to campus clubs |
+| Club Landing Page | Landing Page | Club websites with team & events |
+| Event Landing Page | Landing Page | Full event microsite with schedule |
+| Startup Pitch Deck | Presentation | Investor/sponsor pitch decks |
+| Project Showcase | Presentation | Final-year projects & demos |
+| Workshop Slides | Presentation | Teaching & tutorial presentations |
+
+**How it works:**
+- **Visual template cards** — pick a template, see what fields it needs
+- **Required vs optional fields** — required wrapped in gradient border, optional collapsible
+- **Live progress bar** — see completion percentage as you fill fields
+- **Green dot indicators** — instant visual feedback per field
+- **Prompt preview** — see (and edit) the AI prompt before generating
+- **Free vs Guided toggle** — switch anytime between structured templates and raw text input
+
+### 📅 Campus Event Mode
+
+Create **one event** and automatically generate **all three asset types** — poster, landing page, and presentation — with coordinated details.
+
+- **Two-step wizard modal** — Step 1: event details (name, date, venue, organizer, theme, description), Step 2: pick which assets to generate
+- **Asset type cards** with time estimates and checkboxes
+- **Sequential generation** with per-asset status tracking (Queued → Generating → Complete/Failed)
+- **Animated progress bar** + shimmer overlay on the active asset card
+- **Open All Assets** button when done — launches all viewers at once
+- **Event store** — events and their linked assets saved to localStorage
+
+### 🖼️ Asset Type Selector
+
+Visual card grid on the Create page (not a cramped pill bar):
+- **4 cards** — Auto-Detect, Poster, Landing Page, Presentation
+- Each has a **gradient icon**, label, and description
+- **Spring-animated border** on the active selection
+- Cards **lift on hover** with smooth transitions
+
+### 🧭 Clean, Focused UI
+
+- **Glassmorphic design system** — frosted glass cards, gradient borders, purple glow effects
+- **Responsive header** — logo text and nav labels auto-hide on mobile
+- **Dark theme** with purple/blue gradient accents
+- **Framer Motion animations** throughout — page transitions, staggered reveals, spring physics
+- **Shimmer, pulse-glow, and float** CSS animation utilities
+- **Home page** with Event Mode feature highlight card and dual CTA buttons
+
+---
+
 ## 📸 Screenshots
 
 ### Home Page
-> Gradient hero with "Create Anything with AI" headline and CTA
+> Gradient hero with dual CTAs (Start Creating + Create Event) and Campus Event Mode highlight section
 
 ![Home Page](docs/screenshots/homepage.png)
 
-### Create Page — Asset Type Selector
-> Choose between Auto-Detect, Poster, Landing Page, or Presentation before entering your prompt
+### Create Page — Asset Type Cards + Event Button
+> Visual card grid for asset types, prominent Create Event card with gradient border and stacked asset icons
 
 ![Create Page](docs/screenshots/create-page.png)
 
