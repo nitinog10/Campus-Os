@@ -59,13 +59,34 @@ export interface ClosingSlide {
     subtitle: string;
     note?: string;
     image?: string;
+    links?: string[];
 }
 
-export type Slide = TitleSlide | ContentSlide | ImageFocusSlide | StatsSlide | TwoColumnSlide | ClosingSlide;
+export interface QuoteSlide {
+    type: "quote";
+    quote: string;
+    author: string;
+    role?: string;
+    image?: string;
+}
+
+export interface TeamSlide {
+    type: "team";
+    title: string;
+    members: { name: string; role: string; image?: string }[];
+}
+
+export interface TimelineSlide {
+    type: "timeline";
+    title: string;
+    items: { time: string; title: string; description?: string }[];
+}
+
+export type Slide = TitleSlide | ContentSlide | ImageFocusSlide | StatsSlide | TwoColumnSlide | ClosingSlide | QuoteSlide | TeamSlide | TimelineSlide;
 
 export interface PresentationData {
     title: string;
-    theme?: { primary: string; secondary: string; accent: string };
+    theme?: { primary: string; secondary: string; accent: string; background?: string };
     slides: Slide[];
 }
 
