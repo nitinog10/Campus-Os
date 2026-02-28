@@ -5,5 +5,5 @@ if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === "sk-your-key-h
 }
 
 export const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY || "sk-placeholder-set-your-key",
 });
