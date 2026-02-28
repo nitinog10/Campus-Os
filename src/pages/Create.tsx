@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RotateCcw, ExternalLink, Sparkles, Loader2, Image, Globe, Presentation, Wand2, PenLine } from "lucide-react";
+import { RotateCcw, ExternalLink, Sparkles, Loader2, Image, Globe, Presentation, Wand2, PenLine, CalendarPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IntentInput } from "@/components/IntentInput";
 import { PromptTemplateSelector } from "@/prompt-intelligence";
+import { CreateEventModal, EventAssetGroup, useEventGenerator } from "@/events";
 import { useCreationEngine } from "@/hooks/useCreationEngine";
-import type { AssetType } from "@/types/campusos";
+import type { AssetType, CampusEvent } from "@/types/campusos";
 
 type PromptMode = "free" | "guided";
 
@@ -20,7 +21,22 @@ export default function Create() {
     const { session, runCreation, reset } = useCreationEngine();
     const [selectedType, setSelectedType] = useState<AssetType | "auto">("auto");
     const [promptMode, setPromptMode] = useState<PromptMode>("guided");
-    const isActive = session.status !== "idle";
+    const [showEventModal, setShowEventModal] = useState(false);
+
+    // Event Mode
+    const eventGen = useEventGenerator();
+    const isEventMode = eventGen.overallStatus !== "idle";
+
+    const handleEventSubmit = (event: CampusEvent, selectedTypes: AssetType[]) => {
+        setShowEventModal(false);
+        eventGen.runEventGeneration(event, selectedTypes);
+    };
+
+    const handleEventReset = () => {
+        eventGen.reset();
+    };
+
+    const isActive = session.status !== "idle" || isEventMode;
 
     return (
         <div className="min-h-screen pt-16">
@@ -79,6 +95,27 @@ export default function Create() {
                                 </div>
                             </button>
                         ))}
+                    </motion.div>
+                )}
+
+                {/* Create Event Button */}
+                {!isActive && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.12 }}
+                        className="flex justify-center mb-6"
+                    >
+                        <button
+                            onClick={() => setShowEventModal(true)}
+                            className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl glass-strong border border-dashed border-primary/30 text-primary hover:border-primary/50 hover:glow-purple transition-all duration-200 group"
+                        >
+                            <CalendarPlus className="w-4.5 h-4.5 group-hover:scale-110 transition-transform" />
+                            <div className="text-left">
+                                <p className="text-sm font-medium">Create Campus Event</p>
+                                <p className="text-[10px] text-muted-foreground">Generate poster + landing page + presentation at once</p>
+                            </div>
+                        </button>
                     </motion.div>
                 )}
 
@@ -151,8 +188,20 @@ export default function Create() {
                     </AnimatePresence>
                 )}
 
-                {/* Generating State */}
-                {session.status === "generating" && (
+                {/* Event Generation Progress */}
+                {isEventMode && eventGen.event && (
+                    <EventAssetGroup
+                        event={eventGen.event}
+                        assetStatus={eventGen.assetStatus}
+                        assetUrls={eventGen.assetUrls}
+                        errors={eventGen.errors}
+                        overallStatus={eventGen.overallStatus}
+                        onReset={handleEventReset}
+                    />
+                )}
+
+                {/* Single Asset — Generating State */}
+                {!isEventMode && session.status === "generating" && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -182,8 +231,8 @@ export default function Create() {
                     </motion.div>
                 )}
 
-                {/* Done State */}
-                {session.status === "done" && session.asset && (
+                {/* Single Asset — Done State */}
+                {!isEventMode && session.status === "done" && session.asset && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -215,8 +264,8 @@ export default function Create() {
                     </motion.div>
                 )}
 
-                {/* Error State */}
-                {session.status === "error" && (
+                {/* Single Asset — Error State */}
+                {!isEventMode && session.status === "error" && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -232,6 +281,13 @@ export default function Create() {
                     </motion.div>
                 )}
             </div>
+
+            {/* Event Modal */}
+            <CreateEventModal
+                isOpen={showEventModal}
+                onClose={() => setShowEventModal(false)}
+                onSubmit={handleEventSubmit}
+            />
         </div>
     );
 }
