@@ -468,87 +468,92 @@ export default function PresentationViewer() {
 
     return (
         <div
-            className="h-screen bg-[#0a0a0f] flex flex-col overflow-hidden select-none"
-            style={{ fontFamily: "'Inter', 'Space Grotesk', system-ui, sans-serif" }}
+            className="h-screen bg-[#08080c] flex flex-col overflow-hidden select-none"
+            style={{ fontFamily: "'Inter', 'Sora', 'Space Grotesk', system-ui, sans-serif" }}
         >
-            {/* Global slide animation */}
+            {/* Global slide animation + fonts */}
             <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@400;500;600;700;800&display=swap');
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
+          from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes slideIn {
-          from { opacity: 0; transform: translateX(30px); }
-          to { opacity: 1; transform: translateX(0); }
+          from { opacity: 0; transform: translateX(40px) scale(0.98); }
+          to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes slideOut {
+          from { opacity: 1; transform: translateX(0) scale(1); }
+          to { opacity: 0; transform: translateX(-40px) scale(0.98); }
         }
       `}</style>
 
             {/* Slide Area */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative bg-[#0a0a0f]">
                 <div
                     key={currentSlide}
                     className="absolute inset-0"
-                    style={{ animation: "slideIn 0.4s ease" }}
+                    style={{ animation: "slideIn 0.45s cubic-bezier(0.4, 0, 0.2, 1)" }}
                 >
                     <SlideContent slide={slide} />
                 </div>
 
-                {/* Navigation Arrows */}
+                {/* Navigation Arrows — minimal, Gamma-style */}
                 {currentSlide > 0 && (
                     <button
                         onClick={goPrev}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all border border-white/5"
+                        className="absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/[0.04] hover:bg-white/[0.1] flex items-center justify-center text-gray-500 hover:text-white transition-all duration-200 border border-white/[0.04] hover:border-white/10 backdrop-blur-sm"
                     >
-                        <ChevronLeft className="w-6 h-6" />
+                        <ChevronLeft className="w-5 h-5" />
                     </button>
                 )}
                 {currentSlide < totalSlides - 1 && (
                     <button
                         onClick={goNext}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all border border-white/5"
+                        className="absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/[0.04] hover:bg-white/[0.1] flex items-center justify-center text-gray-500 hover:text-white transition-all duration-200 border border-white/[0.04] hover:border-white/10 backdrop-blur-sm"
                     >
-                        <ChevronRight className="w-6 h-6" />
+                        <ChevronRight className="w-5 h-5" />
                     </button>
                 )}
             </div>
 
-            {/* Bottom Bar */}
-            <div className="h-14 bg-black/60 backdrop-blur-lg border-t border-white/5 px-6 flex items-center justify-between">
+            {/* Bottom Bar — Gamma-style minimal */}
+            <div className="h-14 bg-[#050507]/90 backdrop-blur-xl border-t border-white/[0.04] px-6 flex items-center justify-between">
                 <a
                     href="/"
-                    className="flex items-center gap-2 text-xs text-gray-500 hover:text-white transition-colors"
+                    className="flex items-center gap-2 text-xs text-gray-600 hover:text-white transition-colors duration-200"
                 >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    CampusOS
+                    <span className="hidden sm:inline">CampusOS</span>
                 </a>
 
-                {/* Slide Indicator */}
-                <div className="flex items-center gap-3">
+                {/* Slide progress */}
+                <div className="flex items-center gap-4">
                     <div className="flex gap-1.5">
                         {presentation.slides.map((_, i) => (
                             <button
                                 key={i}
                                 onClick={() => setCurrentSlide(i)}
-                                className={`h-2 rounded-full transition-all duration-200 ${i === currentSlide
-                                        ? "bg-purple-500 w-6"
+                                className={`rounded-full transition-all duration-300 ${i === currentSlide
+                                        ? "bg-gradient-to-r from-purple-500 to-blue-500 w-7 h-2"
                                         : i < currentSlide
-                                            ? "bg-purple-500/40 w-2"
-                                            : "bg-white/10 w-2"
+                                            ? "bg-purple-500/30 w-2 h-2 hover:bg-purple-500/50"
+                                            : "bg-white/[0.08] w-2 h-2 hover:bg-white/20"
                                     }`}
                             />
                         ))}
                     </div>
-                    <span className="text-xs text-gray-500 tabular-nums">
+                    <span className="text-[11px] text-gray-600 tabular-nums font-medium">
                         {currentSlide + 1} / {totalSlides}
                     </span>
                 </div>
 
                 <button
                     onClick={downloadPDF}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-500 text-xs text-white transition-all"
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-xs text-white font-medium transition-all duration-200 shadow-lg shadow-purple-500/10"
                 >
                     <Download className="w-3.5 h-3.5" />
-                    PDF
+                    Export
                 </button>
             </div>
         </div>
