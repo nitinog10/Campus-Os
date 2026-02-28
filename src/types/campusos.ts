@@ -106,6 +106,32 @@ export interface CreationSession {
     createdAt: string;
 }
 
+// ─── Campus Event Mode ──────────────────────────────────
+
+export interface CampusEvent {
+    id: string;
+    name: string;
+    date: string;
+    venue: string;
+    organizer: string;
+    theme: string;
+    description: string;
+    createdAt: string;
+    assets: {
+        poster?: string;
+        landing?: string;
+        presentation?: string;
+    };
+}
+
+export type EventAssetType = keyof CampusEvent["assets"];
+
+export type EventGenerationStatus = {
+    poster: "idle" | "generating" | "done" | "error" | "skipped";
+    landing: "idle" | "generating" | "done" | "error" | "skipped";
+    presentation: "idle" | "generating" | "done" | "error" | "skipped";
+};
+
 // ─── Legacy types (kept for backwards compat) ───────────
 
 export interface PipelineStep {
