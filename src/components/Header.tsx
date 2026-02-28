@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Cpu, Plus, Clock, Sparkles, CalendarPlus } from "lucide-react";
+import { Cpu, Plus, Clock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Header() {
