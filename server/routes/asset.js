@@ -1,5 +1,7 @@
+```
 import { Router } from "express";
 import { openai } from "../lib/openai.js";
+import { cleanCodeOutput } from "../utils/cleaners.js";
 
 export const assetRouter = Router();
 
@@ -9,15 +11,8 @@ const contentTypeMap = {
     code: "html",
 };
 
-assetRouter.post("/generate-asset", async (req, res) => {
-    try {
-        const { step, intent } = req.body;
-        if (!step || !intent) {
-            return res.status(400).json({ message: "step and intent are required" });
-        }
-
-        const systemPrompts = {
-            text: `You are a professional copywriter for college students. Generate high-quality content for: "${step.label}".
+const systemPrompts = {
+    text: (step, intent) => `You are a professional copywriter for college students. Generate high-quality content for: "${step.label}".
 
 Context: Creating ${intent.type.replace("_", " ")} titled "${intent.title}" for ${intent.audience}.
 Tone: ${intent.tone}.
@@ -25,7 +20,7 @@ Description: ${step.description}
 
 Provide polished, ready-to-use text content. Be creative and engaging. Format with clear headings and sections.`,
 
-            design: `You are a UI/UX designer for college branding. Generate design specifications for: "${step.label}".
+    design: (step, intent) => `You are a UI/UX designer for college branding. Generate design specifications for: "${step.label}".
 
 Context: Designing ${intent.type.replace("_", " ")} titled "${intent.title}" for ${intent.audience}.
 Tone: ${intent.tone}.
@@ -39,7 +34,7 @@ Provide a detailed design spec in Markdown with:
 - Spacing guidelines
 Make it modern, vibrant, and appropriate for college students.`,
 
-            code: `You are an expert frontend developer. Generate a complete, self-contained HTML page for: "${step.label}".
+    code: (step, intent) => `You are an expert frontend developer. Generate a complete, self-contained HTML page for: "${step.label}".
 
 Context: Building ${intent.type.replace("_", " ")} titled "${intent.title}" for ${intent.audience}.
 Tone: ${intent.tone}.
@@ -53,9 +48,16 @@ Requirements:
 - Ensure it's responsive
 - Include all content inline — no external dependencies except Google Fonts
 - Do NOT wrap in markdown code blocks — output raw HTML only`,
-        };
+};
 
-        const systemPrompt = systemPrompts[step.stepType] || systemPrompts.text;
+assetRouter.post("/generate-asset", async (req, res) => {
+    try {
+        const { step, intent } = req.body;
+        if (!step ||!intent) {
+            return res.status(400).json({ message: "step and intent are required" });
+        }
+
+        const systemPrompt = systemPrompts[step.stepType]?.(step, intent) || systemPrompts.text(step, intent);
 
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
@@ -75,14 +77,7 @@ Requirements:
             throw new Error("No response from OpenAI");
         }
 
-        // Clean up code output — remove markdown fences if present
-        let cleanContent = content;
-        if (step.stepType === "code") {
-            cleanContent = content
-                .replace(/^```html?\n?/i, "")
-                .replace(/\n?```$/i, "")
-                .trim();
-        }
+        const cleanContent = cleanCodeOutput(content, step.stepType);
 
         const asset = {
             stepId: step.id,
@@ -98,3 +93,4 @@ Requirements:
         res.status(500).json({ message: err.message || "Failed to generate asset" });
     }
 });
+```
