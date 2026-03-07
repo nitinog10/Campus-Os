@@ -1,3 +1,4 @@
+```typescript
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { generate } from "@/services/api";
@@ -21,13 +22,14 @@ export function useCreationEngine() {
 
     const runCreation = useCallback(
         async (prompt: string, assetType: AssetType | "auto" = "auto") => {
-            setSession({
-                ...createSession(),
+            setSession((prev) => ({
+                ...prev,
+                id: crypto.randomUUID(),
                 prompt,
                 assetType,
                 status: "generating",
                 createdAt: new Date().toISOString(),
-            });
+            }));
 
             try {
                 const asset = await generate(prompt, assetType);
@@ -36,7 +38,7 @@ export function useCreationEngine() {
                 saveAsset(asset);
 
                 setSession((prev) => ({
-                    ...prev,
+                   ...prev,
                     asset,
                     status: "done",
                 }));
@@ -46,8 +48,8 @@ export function useCreationEngine() {
                 // Open viewer in new tab
                 window.open(asset.viewUrl, "_blank");
             } catch (err) {
-                const message = err instanceof Error ? err.message : "Something went wrong";
-                setSession((prev) => ({ ...prev, status: "error", error: message }));
+                const message = err instanceof Error? err.message : "Something went wrong";
+                setSession((prev) => ({...prev, status: "error", error: message }));
                 toast.error(message);
             }
         },
@@ -60,3 +62,4 @@ export function useCreationEngine() {
 
     return { session, runCreation, reset };
 }
+```
