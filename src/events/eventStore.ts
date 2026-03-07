@@ -1,10 +1,8 @@
-// ─── Campus Event Store (localStorage CRUD) ──────────────────────────────────
-
+```typescript
 import type { CampusEvent, AssetType } from "@/types/campusos";
+import { v4 as uuidv4 } from 'uuid';
 
 const EVENTS_KEY = "campusos_events";
-
-// ─── Read all events ────────────────────────────────────
 
 export function getEvents(): CampusEvent[] {
     try {
@@ -15,46 +13,39 @@ export function getEvents(): CampusEvent[] {
     }
 }
 
-// ─── Get single event by ID ────────────────────────────
-
 export function getEventById(id: string): CampusEvent | null {
     const events = getEvents();
-    return events.find((e) => e.id === id) ?? null;
+    return events.find((e) => e.id === id)?? null;
 }
-
-// ─── Save a new event ───────────────────────────────────
 
 export function saveEvent(event: CampusEvent): void {
     try {
-        const events = getEvents();
-        // Replace if exists, otherwise prepend
+        let events = getEvents();
         const idx = events.findIndex((e) => e.id === event.id);
         if (idx >= 0) {
             events[idx] = event;
         } else {
-            events.unshift(event);
+            events = [event,...events.slice(0, 49)];
         }
-        localStorage.setItem(EVENTS_KEY, JSON.stringify(events.slice(0, 50)));
+        localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
     } catch {
         // localStorage might be full
     }
 }
-
-// ─── Update asset IDs on an event ───────────────────────
 
 export function updateEventAssets(
     eventId: string,
     assetType: AssetType,
     assetId: string
 ): void {
-    const events = getEvents();
+    let events = getEvents();
     const idx = events.findIndex((e) => e.id === eventId);
     if (idx < 0) return;
 
     events[idx] = {
-        ...events[idx],
+       ...events[idx],
         assets: {
-            ...events[idx].assets,
+           ...events[idx].assets,
             [assetType]: assetId,
         },
     };
@@ -66,18 +57,14 @@ export function updateEventAssets(
     }
 }
 
-// ─── Delete an event ────────────────────────────────────
-
 export function deleteEvent(id: string): void {
     try {
-        const events = getEvents().filter((e) => e.id !== id);
+        const events = getEvents().filter((e) => e.id!== id);
         localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
     } catch {
         // ignore
     }
 }
-
-// ─── Clear all events ───────────────────────────────────
 
 export function clearAllEvents(): void {
     try {
@@ -87,11 +74,9 @@ export function clearAllEvents(): void {
     }
 }
 
-// ─── Create blank event helper ──────────────────────────
-
 export function createBlankEvent(overrides?: Partial<CampusEvent>): CampusEvent {
     return {
-        id: crypto.randomUUID(),
+        id: uuidv4(),
         name: "",
         date: "",
         venue: "",
@@ -103,3 +88,4 @@ export function createBlankEvent(overrides?: Partial<CampusEvent>): CampusEvent 
         ...overrides,
     };
 }
+```
