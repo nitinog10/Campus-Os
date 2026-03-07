@@ -580,3 +580,9 @@ Campus-Os/
 <p align="center">
   Built with ❤️ and OpenAI for hackathons that matter
 </p>
+
+## Code Improvements Applied
+
+- Added regression tests for high-risk files: `server/lib/openai.js`, `src/events/eventStore.ts`, `server/routes/asset.js`.
+- Proposed extraction of shared utility code into a separate module to reduce coupling.
+- Updated documentation by re-indexing and regenerating walkthroughs/diagrams.
