@@ -2331,3 +2331,8 @@ This file defines TypeScript types and interfaces used throughout the CampusOS p
 - Legacy types are kept for backwards compatibility with older parts of the system.
 - When updating or adding new types, ensure that they are used consistently throughout the codebase to maintain type safety.
 
+## Code Improvements Applied
+
+- Added regression tests for high-risk files: `nitinog10-Campus-Os-f285f70/server/lib/openai.js`, `server/lib/openai.js`, `nitinog10-Campus-Os-f285f70/src/events/eventStore.ts`.
+- Proposed extraction of shared utility code into a dedicated module to reduce coupling.
+- Updated and regenerated documentation to reflect recent structural changes.
