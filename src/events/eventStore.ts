@@ -43,9 +43,9 @@ export function updateEventAssets(
     if (idx < 0) return;
 
     events[idx] = {
-       ...events[idx],
+      ...events[idx],
         assets: {
-           ...events[idx].assets,
+          ...events[idx].assets,
             [assetType]: assetId,
         },
     };
