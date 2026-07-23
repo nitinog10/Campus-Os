@@ -1,6 +1,7 @@
 ```typescript
 import type { CampusEvent, AssetType } from "@/types/campusos";
 import { v4 as uuidv4 } from 'uuid';
+import { handleLocalStorageError } from '@/utils/errorHandler';
 
 const EVENTS_KEY = "campusos_events";
 
@@ -8,7 +9,8 @@ export function getEvents(): CampusEvent[] {
     try {
         const raw = localStorage.getItem(EVENTS_KEY);
         return raw ? JSON.parse(raw) : [];
-    } catch {
+    } catch (error) {
+        handleLocalStorageError(error);
         return [];
     }
 }
@@ -28,8 +30,8 @@ export function saveEvent(event: CampusEvent): void {
             events = [event,...events.slice(0, 49)];
         }
         localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
-    } catch {
-        // localStorage might be full
+    } catch (error) {
+        handleLocalStorageError(error);
     }
 }
 
@@ -43,17 +45,17 @@ export function updateEventAssets(
     if (idx < 0) return;
 
     events[idx] = {
-      ...events[idx],
+       ...events[idx],
         assets: {
-          ...events[idx].assets,
+            ...events[idx].assets,
             [assetType]: assetId,
         },
     };
 
     try {
         localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
-    } catch {
-        // ignore
+    } catch (error) {
+        handleLocalStorageError(error);
     }
 }
 
@@ -61,16 +63,16 @@ export function deleteEvent(id: string): void {
     try {
         const events = getEvents().filter((e) => e.id!== id);
         localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
-    } catch {
-        // ignore
+    } catch (error) {
+        handleLocalStorageError(error);
     }
 }
 
 export function clearAllEvents(): void {
     try {
         localStorage.removeItem(EVENTS_KEY);
-    } catch {
-        // ignore
+    } catch (error) {
+        handleLocalStorageError(error);
     }
 }
 
