@@ -2336,3 +2336,15 @@ This file defines TypeScript types and interfaces used throughout the CampusOS p
 - Added regression tests for high-risk files: `nitinog10-Campus-Os-f285f70/server/lib/openai.js`, `server/lib/openai.js`, `nitinog10-Campus-Os-f285f70/src/events/eventStore.ts`.
 - Proposed extraction of shared utility code into a dedicated module to reduce coupling.
 - Updated and regenerated documentation to reflect recent structural changes.
+
+## Code Improvements Applied
+
+- Add regression tests around the highest-risk files:
+  - `nitinog10-Campus-Os-c17662c/server/lib/openai.js`
+  - `server/lib/openai.js`
+  - `nitinog10-Campus-Os-c17662c/src/events/eventStore.ts`
+- Consider extracting shared utility code into a dedicated module to lower coupling.
+- Re-index and regenerate walkthroughs/diagrams after structural changes to keep documentation current.
+
+Files changed:
+- `src/events/eventStore.ts`
