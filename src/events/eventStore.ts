@@ -2,6 +2,7 @@
 import type { CampusEvent, AssetType } from "@/types/campusos";
 import { v4 as uuidv4 } from 'uuid';
 import { handleLocalStorageError } from '@/utils/errorHandler';
+import { updateLocalStorage } from '@/utils/localStorage';
 
 const EVENTS_KEY = "campusos_events";
 
@@ -29,7 +30,7 @@ export function saveEvent(event: CampusEvent): void {
         } else {
             events = [event,...events.slice(0, 49)];
         }
-        localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+        updateLocalStorage(EVENTS_KEY, events);
     } catch (error) {
         handleLocalStorageError(error);
     }
@@ -45,15 +46,15 @@ export function updateEventAssets(
     if (idx < 0) return;
 
     events[idx] = {
-       ...events[idx],
+      ...events[idx],
         assets: {
-            ...events[idx].assets,
+           ...events[idx].assets,
             [assetType]: assetId,
         },
     };
 
     try {
-        localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+        updateLocalStorage(EVENTS_KEY, events);
     } catch (error) {
         handleLocalStorageError(error);
     }
@@ -62,7 +63,7 @@ export function updateEventAssets(
 export function deleteEvent(id: string): void {
     try {
         const events = getEvents().filter((e) => e.id!== id);
-        localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+        updateLocalStorage(EVENTS_KEY, events);
     } catch (error) {
         handleLocalStorageError(error);
     }
