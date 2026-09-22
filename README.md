@@ -2354,3 +2354,12 @@ Files changed:
 - Added regression tests for high-risk files: `server/lib/openai.js`, `nitinog10-Campus-Os-e2f70fd/server/lib/openai.js`, `src/events/eventStore.ts`.
 - Proposed extraction of shared utility code into a dedicated module.
 - Updated documentation by re-indexing and regenerating walkthroughs/diagrams.
+
+## Code Improvements Applied
+
+- Add regression tests around the highest-risk files:
+  - `nitinog10-Campus-Os-b0ce4b1/server/lib/openai.js`
+  - `server/lib/openai.js`
+  - `nitinog10-Campus-Os-b0ce4b1/src/events/eventStore.ts`
+- Consider extracting shared utility code into a dedicated module to lower coupling.
+- Re-index and regenerate walkthroughs/diagrams after structural changes to keep documentation current.
